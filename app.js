@@ -84,15 +84,39 @@ function fetchOpinions() {
   const container = document.getElementById('matrixContainer');
   container.innerHTML = '<div class="text-center py-3"><p class="text-muted" style="font-size:9.5pt;">データを読み込み中...</p></div>';
 
-  fetch(GAS_API_URL)
-    .then(response => response.json())
-    .then(opinions => {
-      renderMatrix(opinions);
+  fetch(GAS_API_URL, {
+      method: 'POST',
+      body: JSON.stringify(data)
     })
-    .catch(error => {
-      console.error('Error:', error);
-      container.innerHTML = '<div class="alert alert-danger" style="font-size:9.5pt;">データの読み込みに失敗しました。GASのURLやアクセス権限を確認してください。</div>';
-    });
+    .then(response => {
+      console.log('GASから応答を受け取りました:', response);
+      return response.json();
+    })
+    .then(res => {
+      console.log('GASからの解析済みJSONデータ:', res); // 👈 ここで中身を確認
+      
+      // 判定条件を少し緩め、もしエラーメッセージが含まれていればそれを直接アラートに出す
+      if (res.status === 'success' && res.refinedText) {
+        // キーが正常に設定されておらず、スキップ文字が入っている場合も警告
+        if (res.refinedText.includes('未設定') || res.refinedText.includes('失敗')) {
+          alert('GAS側からの応答: ' + res.refinedText + '\nスクリプトプロパティの「GROQ_API_KEY」が正しく設定されているか確認してください。');
+          return;
+        }
+        
+        const assistBox = document.getElementById('aiAisistBox');
+        const refinedTextElem = document.getElementById('aiRefinedText');
+        
+        if (assistBox && refinedTextElem) {
+          refinedTextElem.innerText = res.refinedText;
+          assistBox.classList.remove('d-none');
+          console.log('画面へのAIテキスト表示に成功しました。');
+        }
+      } else {
+        // GAS側でcatchされたエラーメッセージがあれば詳細を表示
+        const errMsg = res.message || JSON.stringify(res);
+        alert('AI補強文の取得に課題が発生しました。\n\n【GASからのエラー詳細】:\n' + errMsg);
+      }
+    })
 }
 
 function renderMatrix(opinions) {
