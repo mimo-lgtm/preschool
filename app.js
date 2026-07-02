@@ -1,5 +1,5 @@
 // 【重要】あなたのGASデプロイ完了後に発行されるWebアプリURLに差し替えてください
-const GAS_API_URL = 'https://script.google.com/macros/s/XXXXX/exec'; 
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbx2SV8IPkiDeinZSt_CNoS3LogeqAtvwF9SC9jRzbxo6m8asB36S6dJiYnGi0fCJ3Vb/exec'; 
 
 // 5つの分野の定義
 const CATEGORIES = [
