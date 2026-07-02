@@ -3,140 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>幼児教育・子育て支援コミュニティプラットフォーム</title>
+    <title>幼児教育・子育て 構造化プラットフォーム</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts & Icons -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-light" style="font-family: 'Noto Sans JP', sans-serif;">
+<body class="bg-light">
 
-    <!-- ナビゲーションバー -->
+    <!-- ヘッダーナビゲーション -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-                <span class="me-2">🌱</span> 幼児教育・子育て 構造化マトリクス
-            </a>
-            <span class="navbar-text text-white-50 d-none d-md-inline small">
-                市民の声を集約し、シームレスな新しい教育モデルを共創する
-            </span>
+        <div class="container px-4">
+            <a class="navbar-brand fw-bold" href="#">🌱 幼児教育・子育て 構造化プラットフォーム</a>
         </div>
     </nav>
 
-    <!-- メインコンテンツコンテナ -->
-    <div class="container-fluid px-4 pb-5">
-        
-        <!-- リードメッセージ領域 -->
-        <div class="bg-white rounded-3 p-4 mb-4 shadow-sm border-0">
-            <h2 class="h5 fw-bold text-dark mb-2">💡 このプラットフォームについて</h2>
-            <p class="text-muted mb-0" style="font-size: 9.5pt; line-height: 1.6;">
-                ここでは、出産から高校までのシームレスな成長支援や、子どもを中心とした主体的な学びの場づくりに向けて、地域のみなさまのリアルな声を募集しています。
-                お寄せいただいた「課題」「提案」「魅力」はAIがコンセプトに沿って分類し、構造化マトリクスへ即座に反映されます。
-            </p>
-        </div>
+    <div class="container px-4 pb-5">
+        <!-- ナビゲーションタブ（以前のギミックを100%継承） -->
+        <ul class="nav nav-tabs mb-4" id="platformTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-pane" type="button" role="tab" aria-controls="map-pane" aria-selected="true">
+                    🗺️ アイデアの地図
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai-pane" type="button" role="tab" aria-controls="ai-pane" aria-selected="false">
+                    🤖 AI壁打ち
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button" role="tab" aria-controls="list-pane" aria-selected="false">
+                    📥 提案箱
+                </button>
+            </li>
+        </ul>
 
-        <div class="row g-4">
-            <!-- 左側カラム：意見投稿 ＆ AI壁打ち・論理補強エリア -->
-            <div class="col-xl-4 col-lg-5">
-                <div class="card shadow-sm border-0 sticky-top" style="top: 1rem;">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h3 class="card-title h6 fw-bold text-secondary mb-0 d-flex align-items-center">
-                            <span class="me-2">📝</span> ご意見の入力・AI論理補強
-                        </h3>
+        <!-- 各種コンテンツ領域 -->
+        <div class="tab-content" id="platformTabContent">
+            
+            <!-- ① アイデアの地図（構造化マトリクス） -->
+            <div class="tab-pane fade show active" id="map-pane" role="tabpanel" aria-labelledby="map-tab">
+                <div class="bg-white rounded-3 p-4 mb-4 shadow-sm border border-light">
+                    <h5 class="fw-bold text-dark d-flex align-items-center">
+                        <span class="me-2">コンセプチュアル・マトリクス</span>
+                    </h5>
+                    <p class="text-muted small mb-0">
+                        市民から寄せられた多様な声は、バックエンドのAIによって「大分類・中分類・小分類」へ自動分解・名寄せされ、200字の洗練文としてリアルタイムにマッピングされます。
+                    </p>
+                </div>
+                
+                <!-- マトリクス動的挿入コンテナ -->
+                <div id="matrixContainer"></div>
+            </div>
+
+            <!-- ② AI壁打ち（対話リライト型フォーム） -->
+            <div class="tab-pane fade" id="ai-pane" role="tabpanel" aria-labelledby="ai-tab">
+                <div class="row g-4">
+                    <!-- 左カラム：入力領域 -->
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-0 p-4 bg-white rounded-3">
+                            <h5 class="fw-bold text-secondary mb-4 d-flex align-items-center">
+                                <span>📝 意見の構成と下書き</span>
+                            </h5>
+                            <form id="opinionForm">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">1. 想定するアプローチ（仮の選択）</label>
+                                    <select id="category" class="form-select" required>
+                                        <option value="シームレス成長支援">シームレス成長支援 (出産〜高校の一貫支援)</option>
+                                        <option value="主体的な学び">主体的な学び (子ども中心の環境構築)</option>
+                                        <option value="楽しさと好奇心">楽しさと好奇心 (遊びと探究の融合)</option>
+                                        <option value="個性・才能の開花">個性・才能の開花 (個別最適な育成)</option>
+                                        <option value="未来を生き抜く力">未来を生き抜く力 (非認知能力の醸成)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">2. 関連キーワード（一言で）</label>
+                                    <input type="text" id="keyword" class="form-control" placeholder="例: 幼保小連携、一時預かり、屋外遊び" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">3. 意見の方向性</label>
+                                    <select id="type" class="form-select" required>
+                                        <option value="課題・困りごと">⚠️ 課題・困りごと・障壁</option>
+                                        <option value="提案・アイデア">💡 提案・新しい施策アイデア</option>
+                                        <option value="魅力・継続希望">✨ 魅力・現在の強みや継続要望</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">4. 具体的な提案・意見（生のこえ）</label>
+                                    <textarea id="content" class="form-control" rows="6" placeholder="解決したい事柄や自由な発想をここに入力してください。AIと共に洗練させるため、箇条書きのメモ書きでも構いません。" required></textarea>
+                                </div>
+                                <div class="d-grid gap-2 pt-2">
+                                    <button type="button" id="btnAiDraft" class="btn btn-outline-secondary fw-bold py-2">
+                                        ✨ まずAIに文章を論理的に補強してもらう
+                                    </button>
+                                    <button type="submit" id="btnSubmit" class="btn btn-primary fw-bold py-2" disabled>
+                                        🚀 この内容で社会に届ける
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="card-body p-4">
-                        <form id="opinionForm">
+                    
+                    <!-- 右カラム：AI推敲ワークスペース -->
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-0 p-4 bg-white rounded-3 h-100 d-flex flex-column">
+                            <h5 class="fw-bold text-primary mb-3">🤖 AI論理補強ワークスペース</h5>
+                            <p class="text-muted small mb-4">
+                                左側に入力した「生の意見」を、AIがプロのアドバイザー視点から客観的かつ説得力のある論理構成へとビルドアップします。
+                            </p>
                             
-                            <!-- 1. 対象の分野 -->
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-dark small">1. 対象の分野</label>
-                                <select id="category" class="form-select" required style="font-size: 9.5pt;">
-                                    <option value="シームレス成長支援">シームレス成長支援 (出産〜高校)</option>
-                                    <option value="主体的な学び">主体的な学び (子ども中心)</option>
-                                    <option value="楽しさと好奇心">楽しさと好奇心 (探究心)</option>
-                                    <option value="個性・才能の開花">個性・才能の開花 (個別最適化)</option>
-                                    <option value="未来を生き抜く力">未来を生き抜く力 (非認知能力)</option>
-                                </select>
-                            </div>
-
-                            <!-- 2. キーワード -->
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-dark small">2. キーワード（一言で）</label>
-                                <input type="text" id="keyword" class="form-control" placeholder="例: 幼保小連携、遊びの場、個別サポート" required style="font-size: 9.5pt;">
-                            </div>
-
-                            <!-- 3. 意見の種類 -->
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-dark small">3. 意見の種類</label>
-                                <select id="type" class="form-select" required style="font-size: 9.5pt;">
-                                    <option value="課題・困りごと">⚠️ 課題・困りごと</option>
-                                    <option value="提案・アイデア">💡 提案・アイデア</option>
-                                    <option value="魅力・継続希望">✨ 魅力・継続希望</option>
-                                </select>
-                            </div>
-
-                            <!-- 4. 具体的な提案・意見 -->
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-dark small">4. 具体的な提案・意見（生のこえ）</label>
-                                <textarea id="content" class="form-control" rows="5" placeholder="あなたの率直な意見や、日々の生活で感じる困りごとなどを自由に入力してください。" required style="font-size: 9.5pt; line-height: 1.5;"></textarea>
-                            </div>
-
-                            <!-- 【追加：欠損防止】AI論理補強プレビューエリア -->
-                            <div id="aiAisistBox" class="mb-3 d-none">
-                                <div class="p-3 border border-primary-subtle rounded-3" style="background-color: #f8fafc;">
-                                    <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
-                                        <span class="fw-bold text-primary small d-flex align-items-center">
-                                            <span class="me-1">🤖</span> AI論理補強・洗練案
-                                        </span>
-                                        <button type="button" id="btnAdoptAi" class="btn btn-sm btn-primary" style="font-size: 8pt; padding: 2px 8px;">
-                                            この案を採用する
-                                        </button>
-                                    </div>
-                                    <p id="aiRefinedText" class="mb-0 text-dark" style="font-size: 9pt; line-height: 1.5; white-space: pre-wrap;"></p>
+                            <!-- AIプレビュー表示ボックス（動的制御） -->
+                            <div id="aiAssistBox" class="p-3 border border-primary-subtle rounded-3 bg-light d-none my-0 flex-grow-1 d-flex flex-column justify-content-between">
+                                <div>
+                                    <span class="badge bg-primary mb-2" style="font-size: 7.5pt;">AIリライト提案</span>
+                                    <p id="aiRefinedText" class="text-dark style-preview" style="font-size: 10pt; line-height: 1.6; white-space: pre-wrap;"></p>
+                                </div>
+                                <div class="text-end pt-3">
+                                    <button type="button" id="btnAdoptAi" class="btn btn-sm btn-primary fw-bold px-3">
+                                        この洗練案を左側のフォームに適用する
+                                    </button>
                                 </div>
                             </div>
-
-                            <!-- 操作ボタン群 -->
-                            <div class="d-grid gap-2">
-                                <button type="button" id="btnAiDraft" class="btn btn-outline-secondary btn-sm py-2 fw-medium" style="font-size: 9pt;">
-                                    ✨ まずAIに文章を論理的に補強してもらう
-                                </button>
-                                <button type="submit" id="btnSubmit" class="btn btn-primary btn-sm py-2 fw-bold" style="font-size: 9.5pt;">
-                                    この内容で社会に届ける
-                                </button>
+                            
+                            <!-- 未生成時のダミープレビュー -->
+                            <div id="aiPlaceholder" class="border border-dashed rounded-3 p-5 text-center my-auto text-muted small">
+                                意見を入力し、左下の「AIに文章を論理的に補強してもらう」ボタンを押すと、ここに洗練された構造化下書きが生成されます。
                             </div>
-                        </form>
-                    </div>
-                    <div class="card-footer bg-white text-center py-3 border-top">
-                        <span class="text-muted small" style="font-size: 8pt;">※投稿された内容は審査後、マトリクスへ公開されます。</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 右側カラム：可視化マトリクス（3カラムレーン） -->
-            <div class="col-xl-8 col-lg-7">
-                <div id="matrixContainer">
-                    <!-- ここにJavaScriptから動的に5つの分野のレーン（3カラム）が生成されます -->
+            <!-- ③ 提案箱（時系列一覧ログ） -->
+            <div class="tab-pane fade" id="list-pane" role="tabpanel" aria-labelledby="list-tab">
+                <div class="bg-white rounded-3 p-4 mb-4 shadow-sm border border-light">
+                    <h5 class="fw-bold text-dark">📥 提案箱（市民の声アーカイブ）</h5>
+                    <p class="text-muted small mb-0">システムに投稿された全てのデータが、AI解析による要約や判定タグとともに時系列順に保存されています。</p>
                 </div>
+                
+                <!-- タイムライン表示コンテナ -->
+                <div id="listContainer"></div>
             </div>
+
         </div>
     </div>
 
-    <!-- フッター -->
-    <footer class="bg-white border-top py-4 mt-5">
-        <div class="container-fluid px-4 text-center">
-            <p class="text-muted mb-1" style="font-size: 8.5pt;">🌱 幼児教育・子育て主導プラットフォーム構築プロジェクト</p>
-            <p class="text-muted mb-0" style="font-size: 8pt;">&copy; 2026 All Rights Reserved.</p>
-        </div>
-    </footer>
-
-    <!-- 簡易Favicon404エラー対策 -->
+    <!-- Faviconエラー回避 -->
     <link rel="icon" href="data:,">
-    
-    <!-- Bootstrap 5 Bundle JS -->
+    <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js"></script>
 </body>
