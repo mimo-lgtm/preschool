@@ -1,34 +1,33 @@
-// GASのWebアプリURL（ご自身のURLのままであれば差し替え不要です）
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwgOIK3P6wmltLLxFrPdEuiGko8u8Ty4WAFaIDLZLIrcfUWrwiXvvr0VyEKAmYuuuiK/exec";
 
-// 5つの大分類の固定定義
+// 5つの正しい大分類定義
 const MAIN_CATEGORIES = [
     "シームレス成長支援",
     "主体的な学び",
     "楽しさと好奇心",
     "個性・才能の開花",
-    "未来を生き抜く力",
-    "その他"
+    "未来を生き抜く力"
 ];
 
 let allOpinions = [];
 
 document.addEventListener("DOMContentLoaded", function () {
-    // データの初回読み込み
+    // 初回データ読み込み
     fetchOpinions();
 
-    // ── AI壁打ちロジック群 ──
+    // DOM要素の確実な取得
     const btnAiDraft = document.getElementById("btnAiDraft");
     const btnSubmit = document.getElementById("btnSubmit");
     const btnAdoptAi = document.getElementById("btnAdoptAi");
     const txtContent = document.getElementById("content");
     const aiAssistBox = document.getElementById("aiAssistBox");
     const aiPlaceholder = document.getElementById("aiPlaceholder");
+    const aiTitleText = document.getElementById("aiTitleText");
     const aiRefinedText = document.getElementById("aiRefinedText");
     const opinionForm = document.getElementById("opinionForm");
 
+    // 🤖 AI壁打ち機能（200字要約・推奨タイトル生成）
     if (btnAiDraft && txtContent) {
-        // AI文章推敲（200字要約）の実行
         btnAiDraft.addEventListener("click", async function () {
             const rawText = txtContent.value.trim();
             if (!rawText) {
@@ -37,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             btnAiDraft.disabled = true;
-            btnAiDraft.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> AI推敲中...`;
+            btnAiDraft.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> 推敲中...`;
 
             try {
                 const res = await fetch(GAS_URL, {
@@ -47,10 +46,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await res.json();
 
                 if (data.status === "success") {
-                    aiRefinedText.textContent = data.refinedText;
-                    aiPlaceholder.classList.add("d-none");
-                    aiAssistBox.classList.remove("d-none");
-                    btnSubmit.disabled = false; // 送信を許可
+                    // 推奨タイトルと200字要約を画面に反映
+                    if (aiTitleText) aiTitleText.textContent = data.title || "推奨タイトルが生成されませんでした";
+                    if (aiRefinedText) aiRefinedText.textContent = data.refinedText || data.summary || "200字要約が生成されませんでした";
+                    
+                    if (aiPlaceholder) aiPlaceholder.classList.add("d-none");
+                    if (aiAssistBox) aiAssistBox.classList.remove("d-none");
+                    if (btnSubmit) btnSubmit.disabled = false;
                 } else {
                     alert("AI推敲エラー: " + data.message);
                 }
@@ -64,22 +66,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // AIが作成した200字文章を上の入力欄にコピー（スマホ・PC完全対応）
+    // 200字要約を入力欄へ反映させる処理
     if (btnAdoptAi && txtContent && aiRefinedText) {
         btnAdoptAi.addEventListener("click", function () {
             txtContent.value = aiRefinedText.textContent;
-            alert("洗練された文章を入力欄に反映しました！");
+            alert("200字要約の文章を入力欄に反映しました。");
         });
     }
 
-    // 最終送信処理
+    // フォーム送信処理
     if (opinionForm) {
         opinionForm.addEventListener("submit", async function (e) {
             e.preventDefault();
             const finalContent = txtContent.value.trim();
 
             btnSubmit.disabled = true;
-            btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 送信中...`;
+            btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> 送信中...`;
 
             try {
                 const res = await fetch(GAS_URL, {
@@ -89,58 +91,48 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await res.json();
 
                 if (data.status === "success") {
-                    alert(`送信が完了しました！\n\nAI自動識別結果:\n【大分類】 ${data.result.大分類}\n【中分類】 ${data.result.中分類}`);
+                    alert("送信が完了しました！");
                     opinionForm.reset();
-                    aiPlaceholder.classList.remove("d-none");
-                    aiAssistBox.classList.add("d-none");
-                    btnSubmit.disabled = true;
-                    // 再読み込みして地図と提案箱を更新
-                    fetchOpinions();
+                    if (aiPlaceholder) aiPlaceholder.classList.remove("d-none");
+                    if (aiAssistBox) aiAssistBox.classList.add("d-none");
+                    if (btnSubmit) btnSubmit.disabled = true;
+                    fetchOpinions(); // 一覧と地図を再更新
                 } else {
                     alert("送信エラー: " + data.message);
                     btnSubmit.disabled = false;
                 }
             } catch (err) {
                 console.error(err);
-                alert("送信中に通信エラーが発生しました。");
+                alert("通信エラーが発生しました。");
                 btnSubmit.disabled = false;
             }
         });
     }
 });
 
-// HTML側のエラーを完全に防ぐための空のグローバル関数定義
-window.filterByMainCategory = function(cat) {
-    console.log("Category clicked: " + cat);
-};
-
-// スプレッドシートからデータを取得
+// スプレッドシートから全件取得
 async function fetchOpinions() {
     try {
         const res = await fetch(GAS_URL);
         allOpinions = await res.json();
-        
-        // エラーデータや配列でない場合の防衛策
-        if (!Array.isArray(allOpinions)) {
-            allOpinions = [];
-        }
+        if (!Array.isArray(allOpinions)) allOpinions = [];
 
         renderIdeaMap();
         renderTeianBako();
     } catch (err) {
-        console.error("データ取得失敗:", err);
+        console.error("データ取得エラー:", err);
     }
 }
 
-// ① 「アイデアの地図」をレンダリング（大分類アコーディオンの中にすっきり200字要約を表示）
+// ① アイデアの地図（課題・提案・魅力をすべて廃止した200字要約版）
 function renderIdeaMap() {
     const container = document.getElementById("matrixContainer");
     if (!container) return;
     container.innerHTML = "";
 
     MAIN_CATEGORIES.forEach((cat, index) => {
-        // 該当する大分類の意見を抽出
-        const filtered = allOpinions.filter(o => o.category === cat);
+        // GAS側のオブジェクトキー（category または 大分類）に柔軟に対応
+        const filtered = allOpinions.filter(o => (o.category === cat || o.大分類 === cat));
         
         const itemHtml = `
             <div class="category-accordion-item">
@@ -154,9 +146,9 @@ function renderIdeaMap() {
                           filtered.map(o => `
                             <div class="col-md-6">
                                 <div class="opinion-card border-primary-custom h-100">
-                                    <div class="badge-keyword">${o.midCat || "一般テーマ"}</div>
-                                    <div class="card-title-text">${o.title || "無題の提案"}</div>
-                                    <p class="text-secondary small mb-0" style="line-height:1.6;">${o.summary || o.content}</p>
+                                    <div class="badge-keyword">${o.midCat || o.中分類 || "一般テーマ"}</div>
+                                    <div class="card-title-text">${o.title || o.推奨タイトル || "無題の提案"}</div>
+                                    <p class="text-secondary small mb-0" style="line-height:1.6;">${o.summary || o.refinedText || o.content || "内容なし"}</p>
                                 </div>
                             </div>
                           `).join('')}
@@ -168,14 +160,14 @@ function renderIdeaMap() {
     });
 }
 
-// ③ 「提案箱」をレンダリング（最初は大分類のみ。クリックで一覧開閉）
+// ③ 提案箱
 function renderTeianBako() {
     const container = document.getElementById("listContainer");
     if (!container) return;
     container.innerHTML = "";
 
     MAIN_CATEGORIES.forEach((cat, index) => {
-        const filtered = allOpinions.filter(o => o.category === cat);
+        const filtered = allOpinions.filter(o => (o.category === cat || o.大分類 === cat));
 
         const itemHtml = `
             <div class="category-accordion-item">
@@ -188,18 +180,18 @@ function renderTeianBako() {
                         <table class="table table-hover small align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width: 15%">中分類</th>
+                                    <th style="width: 20%">中分類</th>
                                     <th style="width: 25%">推奨タイトル</th>
-                                    <th style="width: 60%">AI 200字要約</th>
+                                    <th style="width: 55%">AI 200字要約</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${filtered.length === 0 ? '<tr><td colspan="3" class="text-muted text-center py-3">届いた意見はありません。</td></tr>' : 
                                   filtered.map(o => `
                                     <tr>
-                                        <td><span class="badge bg-secondary">${o.midCat || "未定"}</span></td>
-                                        <td class="fw-bold text-dark">${o.title || "無題"}</td>
-                                        <td class="text-muted">${o.summary || o.content}</td>
+                                        <td><span class="badge bg-secondary">${o.midCat || o.中分類 || "未定"}</span></td>
+                                        <td class="fw-bold text-dark">${o.title || o.推奨タイトル || "無題"}</td>
+                                        <td class="text-muted">${o.summary || o.refinedText || o.content || "内容なし"}</td>
                                     </tr>
                                   `).join('')}
                             </tbody>
@@ -212,7 +204,7 @@ function renderTeianBako() {
     });
 }
 
-// アコーディオンの共通開閉ロジック
+// 開閉共通関数
 window.toggleAccordion = function(id) {
     const body = document.getElementById(`${id}-body`);
     const chevron = document.getElementById(`${id}-chevron`);
