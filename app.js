@@ -1,239 +1,228 @@
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwgOIK3P6wmltLLxFrPdEuiGko8u8Ty4WAFaIDLZLIrcfUWrwiXvvr0VyEKAmYuuuiK/exec'; // 👈 新しいGASデプロイURLに書き換えてください
+// GASのWebアプリURL（ご自身のURLのままであれば差し替え不要です）
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwgOIK3P6wmltLLxFrPdEuiGko8u8Ty4WAFaIDLZLIrcfUWrwiXvvr0VyEKAmYuuuiK/exec";
 
-const CORE_CATEGORIES = [
-  "シームレス成長支援",
-  "主体的な学び",
-  "楽しさと好奇心",
-  "個性・才能の開花",
-  "未来を生き抜く力"
+// 5つの大分類の固定定義
+const MAIN_CATEGORIES = [
+    "シームレス成長支援",
+    "主体的な学び",
+    "楽しさと好奇心",
+    "個性・才能の開花",
+    "未来を生き抜く力",
+    "その他"
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
-  fetchTimelineAndMatrix();
+let allOpinions = [];
 
-  // AI壁打ちボタンのイベント
-  const btnAiDraft = document.getElementById('btnAiDraft');
-  if (btnAiDraft) {
-    btnAiDraft.addEventListener('click', function() {
-      const contentVal = document.getElementById('content').value;
-      
-      if (!contentVal.trim()) {
-        alert('まずは「具体的な提案・意見」の欄に、生の意見を入力してください。');
-        return;
-      }
+document.addEventListener("DOMContentLoaded", function () {
+    // データの初回読み込み
+    fetchOpinions();
 
-      const btnOriginalText = this.innerText;
-      this.disabled = true;
-      this.innerText = '✨ AIが最適な教育論理へリライト中...';
+    // ── AI壁打ちロジック群 ──
+    const btnAiDraft = document.getElementById("btnAiDraft");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const btnAdoptAi = document.getElementById("btnAdoptAi");
+    const txtContent = document.getElementById("content");
+    const aiAssistBox = document.getElementById("aiAssistBox");
+    const aiPlaceholder = document.getElementById("aiPlaceholder");
+    const aiRefinedText = document.getElementById("aiRefinedText");
+    const opinionForm = document.getElementById("opinionForm");
 
-      const payload = {
-        action: 'ai_draft',
-        category: document.getElementById('category').value,
-        keyword: document.getElementById('keyword').value,
-        type: document.getElementById('type').value,
-        content: contentVal
-      };
+    if (btnAiDraft && txtContent) {
+        // AI文章推敲（200字要約）の実行
+        btnAiDraft.addEventListener("click", async function () {
+            const rawText = txtContent.value.trim();
+            if (!rawText) {
+                alert("意見を先に入力してください。");
+                return;
+            }
 
-      fetch(GAS_API_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      })
-      .then(response => response.json())
-      .then(res => {
-        if (res.status === 'success' && res.refinedText) {
-          document.getElementById('aiPlaceholder').classList.add('d-none');
-          const aiBox = document.getElementById('aiAssistBox');
-          aiBox.classList.remove('d-none');
-          document.getElementById('aiRefinedText').innerText = res.refinedText;
-          document.getElementById('btnSubmit').disabled = false;
-        } else {
-          // 👈 詳細なエラー内容を表示するように強化
-          alert('【AI下書き構築エラー】\n' + (res.message || '不明なエラーです。GASのログを確認してください。'));
-        }
-      })
-      .catch(err => {
-        console.error('AI通信エラー:', err);
-        alert('通信に失敗しました。URLが正しいか、またはCORSエラーが発生していないか確認してください。');
-      })
-      .finally(() => {
-        this.disabled = false;
-        this.innerText = btnOriginalText;
-      });
-    });
-  }
+            btnAiDraft.disabled = true;
+            btnAiDraft.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> AI推敲中...`;
 
-  // AI提案の採用処理
-  const btnAdoptAi = document.getElementById('btnAdoptAi');
-  if (btnAdoptAi) {
-    btnAdoptAi.addEventListener('click', function() {
-      document.getElementById('content').value = document.getElementById('aiRefinedText').innerText;
-      document.getElementById('aiAssistBox').classList.add('d-none');
-      document.getElementById('aiPlaceholder').classList.remove('d-none');
-    });
-  }
+            try {
+                const res = await fetch(GAS_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "ai_draft", content: rawText })
+                });
+                const data = await res.json();
 
-  // 最終送信処理
-  const opinionForm = document.getElementById('opinionForm');
-  if (opinionForm) {
-    opinionForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const btnSubmit = document.getElementById('btnSubmit');
-      btnSubmit.disabled = true;
-      const originalSubmitText = btnSubmit.innerText;
-      btnSubmit.innerText = '🚀 AI構造化分析中...';
+                if (data.status === "success") {
+                    aiRefinedText.textContent = data.refinedText;
+                    aiPlaceholder.classList.add("d-none");
+                    aiAssistBox.classList.remove("d-none");
+                    btnSubmit.disabled = false; // 送信を許可
+                } else {
+                    alert("AI推敲エラー: " + data.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("通信エラーが発生しました。");
+            } finally {
+                btnAiDraft.disabled = false;
+                btnAiDraft.textContent = "✨ まずAIに文章を綺麗に整えてもらう";
+            }
+        });
+    }
 
-      const payload = {
-        action: 'submit',
-        category: document.getElementById('category').value,
-        keyword: document.getElementById('keyword').value,
-        type: document.getElementById('type').value,
-        content: document.getElementById('content').value
-      };
+    // AIが作成した200字文章を上の入力欄にコピー（スマホ・PC完全対応）
+    if (btnAdoptAi && txtContent && aiRefinedText) {
+        btnAdoptAi.addEventListener("click", function () {
+            txtContent.value = aiRefinedText.textContent;
+            alert("洗練された文章を入力欄に反映しました！");
+        });
+    }
 
-      fetch(GAS_API_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      })
-      .then(response => response.json())
-      .then(res => {
-        if (res.status === 'success') {
-          alert('送信が完了し、マトリクスと提案箱へ反映されました！');
-          opinionForm.reset();
-          document.getElementById('aiAssistBox').classList.add('d-none');
-          document.getElementById('aiPlaceholder').classList.remove('d-none');
-          btnSubmit.disabled = true;
-          fetchTimelineAndMatrix();
-        } else {
-          alert('登録エラー: ' + res.message);
-          btnSubmit.disabled = false;
-        }
-      })
-      .catch(err => {
-        alert('送信中にネットワークエラーが発生しました。');
-        btnSubmit.disabled = false;
-      })
-      .finally(() => {
-        btnSubmit.innerText = originalSubmitText;
-      });
-    });
-  }
+    // 最終送信処理
+    if (opinionForm) {
+        opinionForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const finalContent = txtContent.value.trim();
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 送信中...`;
+
+            try {
+                const res = await fetch(GAS_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "submit", content: finalContent })
+                });
+                const data = await res.json();
+
+                if (data.status === "success") {
+                    alert(`送信が完了しました！\n\nAI自動識別結果:\n【大分類】 ${data.result.大分類}\n【中分類】 ${data.result.中分類}`);
+                    opinionForm.reset();
+                    aiPlaceholder.classList.remove("d-none");
+                    aiAssistBox.classList.add("d-none");
+                    btnSubmit.disabled = true;
+                    // 再読み込みして地図と提案箱を更新
+                    fetchOpinions();
+                } else {
+                    alert("送信エラー: " + data.message);
+                    btnSubmit.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert("送信中に通信エラーが発生しました。");
+                btnSubmit.disabled = false;
+            }
+        });
+    }
 });
 
-function fetchTimelineAndMatrix() {
-  const mContainer = document.getElementById('matrixContainer');
-  const lContainer = document.getElementById('listContainer');
-  const loadingHtml = '<div class="text-center py-4"><div class="spinner-border text-primary spinner-border-sm"></div></div>';
-  
-  if (mContainer) mContainer.innerHTML = loadingHtml;
-  if (lContainer) lContainer.innerHTML = loadingHtml;
+// HTML側のエラーを完全に防ぐための空のグローバル関数定義
+window.filterByMainCategory = function(cat) {
+    console.log("Category clicked: " + cat);
+};
 
-  fetch(GAS_API_URL)
-    .then(response => response.json())
-    .then(rawOpinions => {
-      const parentOpinions = rawOpinions.filter(op => !op.mergedTo);
-      parentOpinions.forEach(parent => {
-        parent.children = rawOpinions.filter(op => String(op.mergedTo) === String(parent.id));
-      });
-      renderMatrixUI(parentOpinions);
-      renderListUI(rawOpinions);
-    })
-    .catch(err => {
-      const errorHtml = '<div class="alert alert-danger small">データの読み込みに失敗しました。</div>';
-      if (mContainer) mContainer.innerHTML = errorHtml;
-      if (lContainer) lContainer.innerHTML = errorHtml;
+// スプレッドシートからデータを取得
+async function fetchOpinions() {
+    try {
+        const res = await fetch(GAS_URL);
+        allOpinions = await res.json();
+        
+        // エラーデータや配列でない場合の防衛策
+        if (!Array.isArray(allOpinions)) {
+            allOpinions = [];
+        }
+
+        renderIdeaMap();
+        renderTeianBako();
+    } catch (err) {
+        console.error("データ取得失敗:", err);
+    }
+}
+
+// ① 「アイデアの地図」をレンダリング（大分類アコーディオンの中にすっきり200字要約を表示）
+function renderIdeaMap() {
+    const container = document.getElementById("matrixContainer");
+    if (!container) return;
+    container.innerHTML = "";
+
+    MAIN_CATEGORIES.forEach((cat, index) => {
+        // 該当する大分類の意見を抽出
+        const filtered = allOpinions.filter(o => o.category === cat);
+        
+        const itemHtml = `
+            <div class="category-accordion-item">
+                <div class="category-accordion-header" onclick="toggleAccordion('map-sec-${index}')">
+                    <span>📁 ${cat} (${filtered.length}件)</span>
+                    <span class="chevron" id="map-sec-${index}-chevron">▼</span>
+                </div>
+                <div class="category-accordion-body d-none" id="map-sec-${index}-body">
+                    <div class="row g-3">
+                        ${filtered.length === 0 ? '<p class="text-muted small p-3">この分類にはまだ意見がありません。</p>' : 
+                          filtered.map(o => `
+                            <div class="col-md-6">
+                                <div class="opinion-card border-primary-custom h-100">
+                                    <div class="badge-keyword">${o.midCat || "一般テーマ"}</div>
+                                    <div class="card-title-text">${o.title || "無題の提案"}</div>
+                                    <p class="text-secondary small mb-0" style="line-height:1.6;">${o.summary || o.content}</p>
+                                </div>
+                            </div>
+                          `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML("beforeend", itemHtml);
     });
 }
 
-function renderMatrixUI(opinions) {
-  const container = document.getElementById('matrixContainer');
-  if (!container) return;
-  container.innerHTML = '';
+// ③ 「提案箱」をレンダリング（最初は大分類のみ。クリックで一覧開閉）
+function renderTeianBako() {
+    const container = document.getElementById("listContainer");
+    if (!container) return;
+    container.innerHTML = "";
 
-  CORE_CATEGORIES.forEach(categoryName => {
-    const categoryDataset = opinions.filter(op => op.category === categoryName);
-    const problems = categoryDataset.filter(op => op.type === '課題・困りごと');
-    const ideas    = categoryDataset.filter(op => op.type === '提案・アイデア');
-    const merits   = categoryDataset.filter(op => op.type === '魅力・継続希望');
+    MAIN_CATEGORIES.forEach((cat, index) => {
+        const filtered = allOpinions.filter(o => o.category === cat);
 
-    let laneMarkup = `
-      <div class="category-lane">
-        <h4 class="category-title">${categoryName}</h4>
-        <div class="lane-table">
-          <div class="lane-row">
-            <div class="lane-col">
-              <div class="col-header text-danger" style="background-color: #fdf2f2;">⚠️ 課題 (${problems.length})</div>
-              <div>${generateCardStream(problems, 'danger')}</div>
+        const itemHtml = `
+            <div class="category-accordion-item">
+                <div class="category-accordion-header" onclick="toggleAccordion('list-sec-${index}')">
+                    <span>📥 ${cat} 一覧 (${filtered.length}件)</span>
+                    <span class="chevron" id="list-sec-${index}-chevron">▼</span>
+                </div>
+                <div class="category-accordion-body d-none" id="list-sec-${index}-body">
+                    <div class="table-responsive bg-white rounded shadow-sm p-2">
+                        <table class="table table-hover small align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 15%">中分類</th>
+                                    <th style="width: 25%">推奨タイトル</th>
+                                    <th style="width: 60%">AI 200字要約</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filtered.length === 0 ? '<tr><td colspan="3" class="text-muted text-center py-3">届いた意見はありません。</td></tr>' : 
+                                  filtered.map(o => `
+                                    <tr>
+                                        <td><span class="badge bg-secondary">${o.midCat || "未定"}</span></td>
+                                        <td class="fw-bold text-dark">${o.title || "無題"}</td>
+                                        <td class="text-muted">${o.summary || o.content}</td>
+                                    </tr>
+                                  `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="lane-col">
-              <div class="col-header text-primary" style="background-color: #f0f7ff;">💡 提案 (${ideas.length})</div>
-              <div>${generateCardStream(ideas, 'primary')}</div>
-            </div>
-            <div class="lane-col">
-              <div class="col-header text-success" style="background-color: #f3faf5;">✨ 魅力 (${merits.length})</div>
-              <div>${generateCardStream(merits, 'success')}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    container.insertAdjacentHTML('beforeend', laneMarkup);
-  });
+        `;
+        container.insertAdjacentHTML("beforeend", itemHtml);
+    });
 }
 
-function generateCardStream(cards, borderTheme) {
-  if (cards.length === 0) return '<p class="text-muted text-center py-2" style="font-size: 8pt;">（なし）</p>';
-  return cards.map(op => {
-    const displayBody = op.summary ? op.summary : op.content;
-    const cardTitle = op.title ? op.title : `#${op.smallCat || '一般意見'}`;
-    const mergeBadge = (op.children && op.children.length > 0) ? `<span class="badge bg-dark ms-1" style="font-size:7pt;">他 ${op.children.length} 件を統合</span>` : '';
-
-    return `
-      <div class="opinion-card border-${borderTheme}-custom">
-        <div class="d-flex justify-content-between align-items-start">
-          <span class="badge-keyword">#${escapeSpecialChars(op.smallCat || '子育て')}</span>
-          <div><span class="badge-hierarchy">${escapeSpecialChars(op.midCat || '全体')}</span>${mergeBadge}</div>
-        </div>
-        <div class="card-title-text">${escapeSpecialChars(cardTitle)}</div>
-        <div style="color: #475569; font-size: 8.5pt; white-space: pre-wrap; line-height: 1.5;">${escapeSpecialChars(displayBody)}</div>
-        <div class="text-end pt-1" style="font-size: 7.5pt; color: #94a3b8;">ID: ${op.id}</div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderListUI(opinions) {
-  const container = document.getElementById('listContainer');
-  if (!container) return;
-  container.innerHTML = '';
-
-  const sortedOpinions = [...opinions].reverse();
-  container.innerHTML = sortedOpinions.map(op => {
-    const formattedDate = op.timestamp ? new Date(op.timestamp).toLocaleString('ja-JP') : '不明';
-    let typeBadgeColor = op.type === '課題・困りごと' ? 'bg-danger' : (op.type === '魅力・継続希望' ? 'bg-success' : 'bg-primary');
-
-    return `
-      <div class="card mb-3 border-0 shadow-sm rounded-3">
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <span class="badge bg-light text-dark border me-1" style="font-size: 8pt;">${escapeSpecialChars(op.category)}</span>
-              <span class="badge ${typeBadgeColor}" style="font-size: 8pt;">${escapeSpecialChars(op.type)}</span>
-            </div>
-            <small class="text-muted" style="font-size: 8pt;">${formattedDate}</small>
-          </div>
-          <h6 class="fw-bold text-dark mb-2" style="font-size: 10pt;">${op.title ? `【${escapeSpecialChars(op.title)}】` : ''} #${escapeSpecialChars(op.midCat || '幼児教育')}</h6>
-          <div class="p-3 bg-light rounded-2 mb-2" style="font-size: 9pt; border-left: 3px solid #cbd5e1;">
-            <p class="mb-0 text-dark" style="line-height: 1.5; white-space: pre-wrap;">${escapeSpecialChars(op.summary || '（未要約）')}</p>
-          </div>
-          <p class="mb-0 text-secondary mt-2 px-1" style="font-size: 8.5pt; white-space: pre-wrap;">${escapeSpecialChars(op.content)}</p>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function escapeSpecialChars(str) {
-  if (!str) return '';
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-}
+// アコーディオンの共通開閉ロジック
+window.toggleAccordion = function(id) {
+    const body = document.getElementById(`${id}-body`);
+    const chevron = document.getElementById(`${id}-chevron`);
+    if (body) {
+        if (body.classList.contains("d-none")) {
+            body.classList.remove("d-none");
+            if (chevron) chevron.textContent = "▲";
+        } else {
+            body.classList.add("d-none");
+            if (chevron) chevron.textContent = "▼";
+        }
+    }
+};
