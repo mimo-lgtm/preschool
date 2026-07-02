@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>幼児教育・子育て 構造化プラットフォーム</title>
+    <title>幼児教育・子育て 意見まとめ広場</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,17 +12,17 @@
 </head>
 <body class="bg-light">
 
-    <!-- プレミアム・ナビゲーションバー -->
+    <!-- 案内バー -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4 py-3">
         <div class="container px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#" style="letter-spacing: 0.5px;">
-                <span style="font-size: 1.3rem;">🌱</span> 幼児教育・子育て 構造化プラットフォーム
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
+                🌱 幼児教育・子育て 意見まとめ広場
             </a>
         </div>
     </nav>
 
     <div class="container px-4 pb-5">
-        <!-- スタイリッシュ・タブナビゲーション -->
+        <!-- 切り替えボタン（カプセル型） -->
         <ul class="nav nav-pills mb-4 p-1 bg-white rounded-pill shadow-sm max-width-tabs" id="platformTab" role="tablist">
             <li class="nav-item flex-fill" role="presentation">
                 <button class="nav-link active fw-bold rounded-pill py-25 text-center" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-pane" type="button" role="tab">🗺️ アイデアの地図</button>
@@ -39,10 +39,20 @@
             
             <!-- ① アイデアの地図 -->
             <div class="tab-pane fade show active" id="map-pane" role="tabpanel">
-                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white border-start border-primary border-4">
-                    <h5 class="fw-bold text-dark mb-1">コンセプチュアル・マトリクス</h5>
-                    <p class="text-muted small mb-0">市民から寄せられた多様な声は、バックエンドのAIによって「大分類・中分類・小分類」へ自動分解され、200字の洗練文としてマッピングされます。</p>
+                <!-- 📸 画像置き場（ここに後から画像を入れられます） -->
+                <div class="mb-4 text-center bg-white rounded-3 p-3 shadow-sm border">
+                    <div class="py-4 text-muted bg-light rounded" style="border: 2px dashed #cbd5e1;">
+                        🖼️ 【ここに後ほど地図の画像を挿入します】
+                        <br><small class="text-secondary">（現在の設定のまま画像を上書きすればここに表示されます）</small>
+                    </div>
                 </div>
+
+                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white border-start border-primary border-4">
+                    <h5 class="fw-bold text-dark mb-1">みんなの意見の地図</h5>
+                    <p class="text-muted small mb-0">5つの大分類が並んでいます。項目をクリックすると、その中にある詳しい意見（下の階層）が開きます。</p>
+                </div>
+
+                <!-- クリックして開く5分類の置き場 -->
                 <div id="matrixContainer"></div>
             </div>
 
@@ -51,10 +61,10 @@
                 <div class="row g-4">
                     <div class="col-lg-6">
                         <div class="card shadow-sm border-0 p-4 bg-white rounded-3">
-                            <h5 class="fw-bold text-dark mb-4 pb-2 border-bottom">📝 意見の構成と下書き</h5>
+                            <h5 class="fw-bold text-dark mb-4 pb-2 border-bottom">📝 意見の入力と下書き作成</h5>
                             <form id="opinionForm">
                                 <div class="mb-35">
-                                    <label class="form-label fw-bold small text-secondary">1. 想定するアプローチ（仮の選択）</label>
+                                    <label class="form-label fw-bold small text-secondary">1. 当てはまる分類（仮の選択）</label>
                                     <select id="category" class="form-select form-select-custom" required>
                                         <option value="シームレス成長支援">シームレス成長支援 (出産〜高校の一貫支援)</option>
                                         <option value="主体的な学び">主体的な学び (子ども中心の環境構築)</option>
@@ -64,24 +74,24 @@
                                     </select>
                                 </div>
                                 <div class="mb-35">
-                                    <label class="form-label fw-bold small text-secondary">2. 関連キーワード（一言で）</label>
+                                    <label class="form-label fw-bold small text-secondary">2. 関連するキーワード（一言で）</label>
                                     <input type="text" id="keyword" class="form-control form-control-custom" placeholder="例: 幼保小連携、屋外遊び" required>
                                 </div>
                                 <div class="mb-35">
-                                    <label class="form-label fw-bold small text-secondary">3. 意見の方向性</label>
+                                    <label class="form-label fw-bold small text-secondary">3. 意見の種類</label>
                                     <select id="type" class="form-select form-select-custom" required>
-                                        <option value="課題・困りごと">⚠️ 課題・困りごと・障壁</option>
-                                        <option value="提案・アイデア">💡 提案・新しい施策アイデア</option>
-                                        <option value="魅力・継続希望">✨ 魅力・現在の強みや継続要望</option>
+                                        <option value="課題・困りごと">⚠️ 課題・困りごと・直したい部分</option>
+                                        <option value="提案・アイデア">💡 提案・新しいアイデア</option>
+                                        <option value="魅力・継続希望">✨ 魅力・これからも続けてほしいこと</option>
                                     </select>
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold small text-secondary">4. 具体的な提案・意見（生のこえ）</label>
-                                    <textarea id="content" class="form-control form-control-custom" rows="6" placeholder="解決したい事柄や自由な発想をここに入力してください。メモ書きでも構いません。" required></textarea>
+                                    <label class="form-label fw-bold small text-secondary">4. 具体的な意見（自由に入力してください）</label>
+                                    <textarea id="content" class="form-control form-control-custom" rows="6" placeholder="メモ書きや、思いついたままで構いません。自由に入力してください。" required></textarea>
                                 </div>
                                 <div class="d-grid gap-2 pt-2">
                                     <button type="button" id="btnAiDraft" class="btn btn-outline-dark fw-bold py-25 rounded-pill shadow-sm transition-btn">✨ まずAIに文章を論理的に補強してもらう</button>
-                                    <button type="submit" id="btnSubmit" class="btn btn-primary fw-bold py-25 rounded-pill shadow-sm transition-btn" disabled>🚀 この内容で社会に届ける</button>
+                                    <button type="submit" id="btnSubmit" class="btn btn-primary fw-bold py-25 rounded-pill shadow-sm transition-btn" disabled>🚀 この内容で送信する</button>
                                 </div>
                             </form>
                         </div>
@@ -89,23 +99,23 @@
                     
                     <div class="col-lg-6">
                         <div class="card shadow-sm border-0 p-4 bg-white rounded-3 h-100 d-flex flex-column">
-                            <h5 class="fw-bold text-dark mb-2 pb-2 border-bottom">🤖 AI論理補強ワークスペース</h5>
-                            <p class="text-muted small mb-4">生の意見を、AIがプロのアドバイザー視点から説得力のある論理構成へとビルドアップします。</p>
+                            <h5 class="fw-bold text-dark mb-2 pb-2 border-bottom">🤖 AI文章推敲スペース</h5>
+                            <p class="text-muted small mb-4">入力された意見を、AIがより伝わりやすい文章へと整えます。</p>
                             
                             <div id="aiAssistBox" class="p-4 border border-primary-subtle rounded-3 bg-light d-none my-0 flex-grow-1 d-flex flex-column justify-content-between shadow-inner">
                                 <div>
-                                    <span class="badge bg-primary px-2 py-1 mb-3" style="font-size: 8pt; letter-spacing: 0.5px;">AIリライト提案</span>
-                                    <p id="aiRefinedText" class="text-dark style-preview" style="font-size: 10pt; line-height: 1.7; white-space: pre-wrap; letter-spacing: 0.3px;"></p>
+                                    <span class="badge bg-primary px-2 py-1 mb-3" style="font-size: 8pt;">AIが整えた文章</span>
+                                    <p id="aiRefinedText" class="text-dark" style="font-size: 10pt; line-height: 1.7; white-space: pre-wrap;"></p>
                                 </div>
                                 <div class="text-end pt-3 border-top mt-3">
-                                    <button type="button" id="btnAdoptAi" class="btn btn-primary fw-bold px-4 py-2 rounded-pill shadow-sm">この洗練案を左側のフォームに適用する</button>
+                                    <button type="button" id="btnAdoptAi" class="btn btn-primary fw-bold px-4 py-2 rounded-pill shadow-sm">この文章を左側のフォームに使う</button>
                                 </div>
                             </div>
                             
                             <div id="aiPlaceholder" class="border border-dashed rounded-3 p-5 text-center my-auto text-muted small bg-light">
                                 <div class="py-4">
                                     <span style="font-size: 2rem;" class="d-block mb-2">💡</span>
-                                    意見を入力し、左下の「AIに文章を論理的に補強してもらう」ボタンを押すと、ここに洗練された構造化下書きが生成されます。
+                                    意見を入力し、左下の「AIに文章を論理的に補強してもらう」ボタンを押すと、ここにきれいに整えられた下書きが届きます。
                                 </div>
                             </div>
                         </div>
@@ -116,9 +126,10 @@
             <!-- ③ 提案箱 -->
             <div class="tab-pane fade" id="list-pane" role="tabpanel">
                 <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white border-start border-dark border-4">
-                    <h5 class="fw-bold text-dark mb-1">📥 提案箱（市民の声アーカイブ）</h5>
-                    <p class="text-muted small mb-0">すべてのデータが、AI解析による要約や判定タグとともに時系列順に保存されています。</p>
+                    <h5 class="fw-bold text-dark mb-1">📥 提案箱（届いた意見の一覧）</h5>
+                    <p class="text-muted small mb-0">最初は「大分類」のみが表示されています。クリックすると、これまでに届いたすべての意見が一覧で開きます。</p>
                 </div>
+                <!-- クリックして開く提案箱の置き場 -->
                 <div id="listContainer"></div>
             </div>
 
