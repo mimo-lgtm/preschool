@@ -12,7 +12,6 @@
 </head>
 <body class="bg-light">
 
-    <!-- 案内バー -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4 py-3">
         <div class="container px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
@@ -22,7 +21,6 @@
     </nav>
 
     <div class="container px-4 pb-5">
-        <!-- 切り替えボタン（カプセル型） -->
         <ul class="nav nav-pills mb-4 p-1 bg-white rounded-pill shadow-sm max-width-tabs" id="platformTab" role="tablist">
             <li class="nav-item flex-fill" role="presentation">
                 <button class="nav-link active fw-bold rounded-pill py-25 text-center" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-pane" type="button" role="tab">🗺️ アイデアの地図</button>
@@ -37,30 +35,59 @@
 
         <div class="tab-content" id="platformTabContent">
             
-            <!-- ① アイデアの地図 -->
             <div class="tab-pane fade show active" id="map-pane" role="tabpanel">
-                <!-- 📸 画像置き場（ここに後から画像を入れられます） -->
-                <div class="mb-4 text-center bg-white rounded-3 p-3 shadow-sm border">
-                    <div class="py-4 text-muted bg-light rounded" style="border: 2px dashed #cbd5e1;">
-                        🖼️ 【ここに後ほど地図の画像を挿入します】
-                        <br><small class="text-secondary">（現在の設定のまま画像を上書きすればここに表示されます）</small>
+                
+                <div class="tree-container mb-4 shadow-sm rounded-3 overflow-hidden">
+                    <div class="tree-overlay">
+                        <div class="tree-plate plate-top">
+                            <span class="plate-title">シームレス成長支援</span>
+                            <span class="plate-sub">（出産〜高校）</span>
+                        </div>
+                        
+                        <div class="plate-row-container">
+                            <div class="tree-plate plate-child">
+                                <span class="plate-title">主体的な学び</span>
+                                <span class="plate-sub">（子ども中心）</span>
+                            </div>
+                            <div class="tree-plate plate-child">
+                                <span class="plate-title">楽しさと好奇心</span>
+                                <span class="plate-sub">（探究心）</span>
+                            </div>
+                            <div class="tree-plate plate-child">
+                                <span class="plate-title">個性・才能の開花</span>
+                                <span class="plate-sub">（個別最適化）</span>
+                            </div>
+                            <div class="tree-plate plate-child">
+                                <span class="plate-title">未来を生き抜く力</span>
+                                <span class="plate-sub">（非認知能力）</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white border-start border-primary border-4">
-                    <h5 class="fw-bold text-dark mb-1">みんなの意見の地図</h5>
-                    <p class="text-muted small mb-0">5つの大分類が並んでいます。項目をクリックすると、その中にある詳しい意見（下の階層）が開きます。</p>
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-9">
+                            <h5 class="fw-bold text-dark mb-1">みんなの意見の地図</h5>
+                            <p class="text-muted small mb-0">上の木のボタン、または下の項目をクリックすると、その中にある詳しい意見（下の階層）が開きます。流れる川のように、途切れることのない一貫した支援を目指します。</p>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <img src="imaage/river.jpg" alt="川の風景" class="img-fluid rounded shadow-sm section-thumb">
+                        </div>
+                    </div>
                 </div>
 
-                <!-- クリックして開く5分類の置き場 -->
                 <div id="matrixContainer"></div>
             </div>
 
-            <!-- ② AI壁打ち -->
             <div class="tab-pane fade" id="ai-pane" role="tabpanel">
                 <div class="row g-4">
                     <div class="col-lg-6">
                         <div class="card shadow-sm border-0 p-4 bg-white rounded-3">
+                            <div class="mb-3 text-center">
+                                <img src="image/teacher.jpg" alt="対話のイメージ" class="img-fluid rounded-3 shadow-sm w-100 object-fit-cover" style="height: 150px;">
+                            </div>
+                            
                             <h5 class="fw-bold text-dark mb-4 pb-2 border-bottom">📝 意見の入力と下書き作成</h5>
                             <form id="opinionForm">
                                 <div class="mb-35">
@@ -123,13 +150,18 @@
                 </div>
             </div>
 
-            <!-- ③ 提案箱 -->
             <div class="tab-pane fade" id="list-pane" role="tabpanel">
                 <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white border-start border-dark border-4">
-                    <h5 class="fw-bold text-dark mb-1">📥 提案箱（届いた意見の一覧）</h5>
-                    <p class="text-muted small mb-0">最初は「大分類」のみが表示されています。クリックすると、これまでに届いたすべての意見が一覧で開きます。</p>
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-9">
+                            <h5 class="fw-bold text-dark mb-1">📥 提案箱（届いた意見の一覧）</h5>
+                            <p class="text-muted small mb-0">最初は「大分類」のみが表示されています。クリックすると、これまでに届いたすべての意見が一覧で開きます。新しい技術や未来の視点を取り入れたアイデアもお待ちしています。</p>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <img src="image/ar.jpg" alt="未来・拡張現実のイメージ" class="img-fluid rounded shadow-sm section-thumb">
+                        </div>
+                    </div>
                 </div>
-                <!-- クリックして開く提案箱の置き場 -->
                 <div id="listContainer"></div>
             </div>
 
