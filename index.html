@@ -1,107 +1,143 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>未来の教育・子育て構造化プラットフォーム</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幼児教育・子育て支援コミュニティプラットフォーム</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-light">
+<body class="bg-light" style="font-family: 'Noto Sans JP', sans-serif;">
 
-  <div class="container py-4">
-    <header class="text-center mb-4">
-      <h1 class="display-6 fw-bold text-primary mb-2">未来の教育・子育てプラットフォーム</h1>
-      <div class="card mx-auto bg-white shadow-sm border border-primary-custom" style="max-width: 800px; padding: 15px; margin-bottom: 20px;">
-        <h5 class="text-success fw-bold mb-2" style="font-size: 11pt;">【理念】</h5>
-        <p class="fw-semibold text-dark mb-3" style="font-size: 12pt; line-height: 1.4;">
-          すべての子どもが、生まれた瞬間から自ら学び、挑戦し、幸せな人生を切り拓く力を育む社会を実現する。
-        </p>
-        <div style="border-top: 1px solid #ddd; padding-top: 10px;">
-          <h5 class="text-success fw-bold mb-2" style="font-size: 11pt;">【コンセプト】</h5>
-          <p class="text-muted text-start" style="font-size: 10pt; line-height: 1.5; margin: 0;">
-            これからの教育は、学校や教師の都合ではなく、子どもの成長を中心に設計されるべきです。出産前から子育て支援、幼児教育、小・中・高校までを一つの連続した学びとしてつなぎ、年齢ごとに途切れることなく成長を支えます。知識を教え込む教育ではなく、「なぜだろう」「やってみたい」という好奇心を育み、自ら考え、挑戦し、探究する力を養います。学ぶことが楽しいと感じられる環境の中で、一人ひとりの個性や才能を伸ばし、失敗を恐れず挑戦できる経験を積み重ね、変化の激しい時代を自ら切り拓く人材を育成する、切れ目のない新しい教育モデルを実現します。
-          </p>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+                <span class="me-2">🌱</span> 幼児教育・子育て 構造化マトリクス
+            </a>
+            <span class="navbar-text text-white-50 d-none d-md-inline small">
+                市民の声を集約し、シームレスな新しい教育モデルを共創する
+            </span>
         </div>
-      </div>
-    </header>
+    </nav>
 
-    <div class="main-layout-table">
-      <div class="main-layout-row">
+    <!-- メインコンテンツコンテナ -->
+    <div class="container-fluid px-4 pb-5">
         
-        <div class="main-layout-left">
-          <div class="card shadow-sm bg-white" style="padding: 15px;">
-            <div class="bg-primary text-white p-2 rounded mb-3 fw-bold text-center" style="font-size: 11pt;">ご意見・アイデアの投稿</div>
-            <form id="opinionForm">
-              
-              <div class="mb-3">
-                <label for="category" class="form-label fw-bold" style="font-size: 10pt;">1. 該当する分野</label>
-                <select class="form-select font-size-sm" id="category" required>
-                  <option value="" selected disabled>選択してください</option>
-                  <option value="シームレス成長支援">1. シームレス成長支援（出産〜高校の一体化）</option>
-                  <option value="主体的な学び">2. 主体的な学び（自ら考え、探究する）</option>
-                  <option value="楽しさと好奇心">3. 楽しさと好奇心（自然に生まれる教育環境）</option>
-                  <option value="個性・才能の開花">4. 個性・才能の開花（個別最適化された支援）</option>
-                  <option value="未来を生き抜く力">5. 未来を生き抜く力（創造・協働・課題解決）</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="keyword" class="form-label fw-bold" style="font-size: 10pt;">2. 最も近いキーワード</label>
-                <select class="form-select font-size-sm" id="keyword" required>
-                  <option value="" selected disabled>選択してください</option>
-                  <option value="子ども中心">子ども中心</option>
-                  <option value="シームレス教育">シームレス教育</option>
-                  <option value="出産から高校まで">出産から高校まで</option>
-                  <option value="探究学習">探究学習</option>
-                  <option value="主体性">主体性</option>
-                  <option value="好奇心">好奇心</option>
-                  <option value="やる気を育む">やる気を育む</option>
-                  <option value="個別最適化">個別最適化</option>
-                  <option value="創造力">創造力</option>
-                  <option value="協働力">協働力</option>
-                  <option value="非認知能力">非認知能力</option>
-                  <option value="挑戦する力">挑戦する力</option>
-                  <option value="学ぶ楽しさ">学ぶ楽しさ</option>
-                  <option value="未来型教育">未来型教育</option>
-                  <option value="生涯学習の土台">生涯学習の土台</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="type" class="form-label fw-bold" style="font-size: 10pt;">3. 意見の方向性</label>
-                <select class="form-select font-size-sm" id="type" required>
-                  <option value="" selected disabled>選択してください</option>
-                  <option value="課題・困りごと">⚠️ 現状の課題・困りごと</option>
-                  <option value="提案・アイデア">💡 理想の提案・アイデア</option>
-                  <option value="魅力・継続希望">✨ 素晴らしい点・残したいこと</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="content" class="form-label fw-bold" style="font-size: 10pt;">4. 具体的な提案や意見</label>
-                <textarea class="form-control font-size-sm" id="content" rows="4" required placeholder="あなたの気づきやアイデア、具体的なエピソードなどを自由にご記入ください。"></textarea>
-              </div>
-
-              <button type="submit" class="btn btn-primary w-100 fw-bold py-2" style="font-size: 11pt;">この内容で社会に届ける</button>
-            </form>
-          </div>
+        <!-- リードメッセージ領域 -->
+        <div class="bg-white rounded-3 p-4 mb-4 shadow-sm border-0">
+            <h2 class="h5 fw-bold text-dark mb-2">💡 このプラットフォームについて</h2>
+            <p class="text-muted mb-0" style="font-size: 9.5pt; line-height: 1.6;">
+                ここでは、出産から高校までのシームレスな成長支援や、子どもを中心とした主体的な学びの場づくりに向けて、地域のみなさまのリアルな声を募集しています。
+                お寄せいただいた「課題」「提案」「魅力」はAIがコンセプトに沿って分類し、構造化マトリクスへ即座に反映されます。
+            </p>
         </div>
 
-        <div class="main-layout-right">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h3 class="fw-bold text-secondary mb-0" style="font-size: 12pt;">📊 集まった意見の可視化マトリクス</h3>
-            <button class="btn btn-outline-secondary btn-sm" style="font-size: 9pt;" onclick="fetchOpinions()">🔄 更新</button>
-          </div>
-          
-          <div id="matrixContainer">
+        <div class="row g-4">
+            <!-- 左側カラム：意見投稿 ＆ AI壁打ち・論理補強エリア -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 1rem;">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h3 class="card-title h6 fw-bold text-secondary mb-0 d-flex align-items-center">
+                            <span class="me-2">📝</span> ご意見の入力・AI論理補強
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="opinionForm">
+                            
+                            <!-- 1. 対象の分野 -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-dark small">1. 対象の分野</label>
+                                <select id="category" class="form-select" required style="font-size: 9.5pt;">
+                                    <option value="シームレス成長支援">シームレス成長支援 (出産〜高校)</option>
+                                    <option value="主体的な学び">主体的な学び (子ども中心)</option>
+                                    <option value="楽しさと好奇心">楽しさと好奇心 (探究心)</option>
+                                    <option value="個性・才能の開花">個性・才能の開花 (個別最適化)</option>
+                                    <option value="未来を生き抜く力">未来を生き抜く力 (非認知能力)</option>
+                                </select>
+                            </div>
+
+                            <!-- 2. キーワード -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-dark small">2. キーワード（一言で）</label>
+                                <input type="text" id="keyword" class="form-control" placeholder="例: 幼保小連携、遊びの場、個別サポート" required style="font-size: 9.5pt;">
+                            </div>
+
+                            <!-- 3. 意見の種類 -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-dark small">3. 意見の種類</label>
+                                <select id="type" class="form-select" required style="font-size: 9.5pt;">
+                                    <option value="課題・困りごと">⚠️ 課題・困りごと</option>
+                                    <option value="提案・アイデア">💡 提案・アイデア</option>
+                                    <option value="魅力・継続希望">✨ 魅力・継続希望</option>
+                                </select>
+                            </div>
+
+                            <!-- 4. 具体的な提案・意見 -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-dark small">4. 具体的な提案・意見（生のこえ）</label>
+                                <textarea id="content" class="form-control" rows="5" placeholder="あなたの率直な意見や、日々の生活で感じる困りごとなどを自由に入力してください。" required style="font-size: 9.5pt; line-height: 1.5;"></textarea>
+                            </div>
+
+                            <!-- 【追加：欠損防止】AI論理補強プレビューエリア -->
+                            <div id="aiAisistBox" class="mb-3 d-none">
+                                <div class="p-3 border border-primary-subtle rounded-3" style="background-color: #f8fafc;">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                                        <span class="fw-bold text-primary small d-flex align-items-center">
+                                            <span class="me-1">🤖</span> AI論理補強・洗練案
+                                        </span>
+                                        <button type="button" id="btnAdoptAi" class="btn btn-sm btn-primary" style="font-size: 8pt; padding: 2px 8px;">
+                                            この案を採用する
+                                        </button>
+                                    </div>
+                                    <p id="aiRefinedText" class="mb-0 text-dark" style="font-size: 9pt; line-height: 1.5; white-space: pre-wrap;"></p>
+                                </div>
+                            </div>
+
+                            <!-- 操作ボタン群 -->
+                            <div class="d-grid gap-2">
+                                <button type="button" id="btnAiDraft" class="btn btn-outline-secondary btn-sm py-2 fw-medium" style="font-size: 9pt;">
+                                    ✨ まずAIに文章を論理的に補強してもらう
+                                </button>
+                                <button type="submit" id="btnSubmit" class="btn btn-primary btn-sm py-2 fw-bold" style="font-size: 9.5pt;">
+                                    この内容で社会に届ける
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer bg-white text-center py-3 border-top">
+                        <span class="text-muted small" style="font-size: 8pt;">※投稿された内容は審査後、マトリクスへ公開されます。</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側カラム：可視化マトリクス（3カラムレーン） -->
+            <div class="col-xl-8 col-lg-7">
+                <div id="matrixContainer">
+                    <!-- ここにJavaScriptから動的に5つの分野のレーン（3カラム）が生成されます -->
+                </div>
             </div>
         </div>
-
-      </div>
     </div>
-  </div>
 
-  <script src="app.js"></script>
+    <!-- フッター -->
+    <footer class="bg-white border-top py-4 mt-5">
+        <div class="container-fluid px-4 text-center">
+            <p class="text-muted mb-1" style="font-size: 8.5pt;">🌱 幼児教育・子育て主導プラットフォーム構築プロジェクト</p>
+            <p class="text-muted mb-0" style="font-size: 8pt;">&copy; 2026 All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 簡易Favicon404エラー対策 -->
+    <link rel="icon" href="data:,">
+    
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
