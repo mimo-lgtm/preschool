@@ -1,16 +1,16 @@
 body {
     font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-    background-color: #f1f5f9 !important; /* 落ち着いた背景の薄いグレー */
+    background-color: #f1f5f9 !important;
     color: #334155;
     -webkit-font-smoothing: antialiased;
 }
 
 /* 案内バー */
 .navbar-dark.bg-dark {
-    background-color: #0f172a !important; /* 深い紺色 */
+    background-color: #0f172a !important;
 }
 
-/* 切り替えボタン（丸みのあるデザイン） */
+/* 切り替えボタン */
 .max-width-tabs {
     max-width: 600px;
     margin: 0 auto;
@@ -27,7 +27,7 @@ body {
 
 .nav-pills .nav-link.active {
     color: #ffffff !important;
-    background-color: #3b82f6 !important; /* 綺麗な青色 */
+    background-color: #3b82f6 !important;
     box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
 }
 
@@ -36,34 +36,95 @@ body {
     padding-bottom: 0.65rem !important;
 }
 
-/* 入力欄の調整 */
-.mb-35 {
-    margin-bottom: 1.25rem !important;
-}
-
-.form-select-custom, .form-control-custom {
+/* ── 🌳 木の画像の上に文字を重ねるエリアの調整 ── */
+.tree-container {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    /* ユーザー様の用意したロジックツリー背景画像（logic.jpg）を読み込みます */
+    background-image: url('image/logic.jpg');
+    background-size: cover;
+    background-position: center;
     border: 1px solid #cbd5e1;
+}
+
+/* 画像の上の透明な空間 */
+.tree-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.12); /* 画像の文字を邪魔しない程度の薄い影 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+/* プレートの見た目 */
+.tree-plate {
+    background: #7c2d12; /* 木の看板風の茶色 */
+    color: #ffffff;
+    padding: 12px 20px;
     border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 9.5pt;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25), inset 0 0 0 2px #9a3412;
+    border: 2px solid #ffedd5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s;
 }
 
-.form-select-custom:focus, .form-control-custom:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+.tree-plate:hover {
+    transform: translateY(-4px);
+    background: #9a3412;
 }
 
-/* ボタンの動き */
-.transition-btn {
-    transition: all 0.2s ease;
-}
-.transition-btn:hover {
-    transform: translateY(-1px);
+/* 各プレートの位置調整 */
+.plate-top {
+    font-size: 13pt;
+    width: 280px;
 }
 
-/* ── 折りたたみ（クリックして開く部分）の見た目 ── */
+.plate-row-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1000px;
+    gap: 15px;
+}
 
-/* 5つの大分類の枠組み */
+.plate-child {
+    flex: 1;
+    font-size: 10pt;
+    min-width: 180px;
+}
+
+.plate-title {
+    display: block;
+    letter-spacing: 0.5px;
+}
+
+.plate-sub {
+    display: block;
+    font-size: 8.5pt;
+    color: #ffedd5;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+/* 各枠内の挿絵画像の調整 */
+.section-thumb {
+    max-height: 80px;
+    object-fit: cover;
+    width: 140px;
+}
+
+/* ── 折りたたみ（クリックして開く部分） ── */
 .category-accordion-item {
     background: #ffffff;
     border-radius: 12px;
@@ -73,7 +134,6 @@ body {
     overflow: hidden;
 }
 
-/* クリックする大分類のボタン（ヘッダー） */
 .category-accordion-header {
     width: 100%;
     text-align: left;
@@ -83,26 +143,23 @@ body {
     font-weight: 700;
     color: #0f172a;
     border: none;
-    border-left: 6px solid #3b82f6; /* 左側の青い縦線 */
+    border-left: 6px solid #3b82f6;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.2s;
 }
 
 .category-accordion-header:hover {
     background-color: #f8fafc;
 }
 
-/* 開いた中身の背景 */
 .category-accordion-body {
     padding: 24px;
     background: #f8fafc;
     border-top: 1px solid #e2e8f0;
 }
 
-/* 横並びの列（中分類・小分類をきれいに分ける枠） */
 .lane-row {
     display: flex;
     gap: 20px;
@@ -129,7 +186,7 @@ body {
     color: #475569;
 }
 
-/* 意見カードの装飾（ホバーで浮き上がる設定） */
+/* 意見カード */
 .opinion-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -145,10 +202,9 @@ body {
     box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.08);
 }
 
-/* 意見の種類に応じた上部の色線 */
-.border-danger-custom { border-top: 4px solid #ef4444; }  /* 課題：赤 */
-.border-primary-custom { border-top: 4px solid #3b82f6; } /* 提案：青 */
-.border-success-custom { border-top: 4px solid #10b981; } /* 魅力：緑 */
+.border-danger-custom { border-top: 4px solid #ef4444; }
+.border-primary-custom { border-top: 4px solid #3b82f6; }
+.border-success-custom { border-top: 4px solid #10b981; }
 
 .card-title-text {
     font-size: 10pt;
@@ -169,14 +225,17 @@ body {
     margin-bottom: 10px;
 }
 
-/* 点線・内側の影 */
+.mb-35 { margin-bottom: 1.25rem !important; }
+.form-select-custom, .form-control-custom { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; font-size: 9.5pt; }
+.form-select-custom:focus, .form-control-custom:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+.transition-btn { transition: all 0.2s ease; }
+.transition-btn:hover { transform: translateY(-1px); }
 .border-dashed { border: 2px dashed #cbd5e1 !important; }
 .shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02); }
 
-/* 画面が狭いとき（スマホ）は自動で縦並びにする設定 */
 @media (max-width: 991.98px) {
-    .lane-row { 
-        flex-direction: column; 
-        gap: 24px; 
-    }
+    .lane-row { flex-direction: column; gap: 24px; }
+    .plate-row-container { flex-direction: column; align-items: center; gap: 10px; }
+    .tree-container { height: auto; }
+    .tree-overlay { position: relative; background: #334155; padding: 20px 10px; gap: 20px; }
 }
