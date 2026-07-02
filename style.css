@@ -1,113 +1,130 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
+/* ==========================================================================
+   ベーススタイル＆共通装飾
+   ========================================================================== */
 body {
-  font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
-  color: #333;
-  margin: 0;
-  padding: 0;
-  background-color: #f8f9fa;
+    background-color: #f8fafc !important;
+    color: #334155;
+    -webkit-font-smoothing: antialiased;
 }
 
-.font-size-sm {
-  font-size: 9.5pt !important;
+/* 全体的なリンクやボタンの滑らかな変化 */
+.btn, .form-select, .form-control {
+    transition: all 0.2s ease-in-out;
+    border-radius: 6px !important;
 }
 
-/* 確実な2カラムレイアウトのための独自テーブル記述 */
-.main-layout-table {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
+/* ==========================================================================
+   【新設】AI壁打ちプレビュー領域の調整
+   ========================================================================== */
+#aiAisistBox {
+    animation: fadeIn 0.3s ease-out;
 }
 
-.main-layout-row {
-  display: table-row;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.main-layout-left {
-  display: table-cell;
-  width: 32%;
-  vertical-align: top;
-  padding-right: 15px;
-}
-
-.main-layout-right {
-  display: table-cell;
-  width: 68%;
-  vertical-align: top;
-  padding-left: 15px;
-}
-
-/* マトリクス用レーン（各分野） */
+/* ==========================================================================
+   右側カラム：マトリクスレーンの構造化
+   ========================================================================== */
 .category-lane {
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 15px;
-  border: 1px solid #e0e0e0;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
 }
 
+/* 各分野のタイトル */
 .category-title {
-  border-left: 4px solid #0d6efd;
-  padding-left: 8px;
-  font-weight: bold;
-  color: #212529;
-  font-size: 11pt;
-  margin-bottom: 10px;
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1e293b;
+    border-left: 4px solid #3b82f6;
+    padding-left: 10px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
 }
 
-/* レーン内の3列並び用のテーブル構造 */
+/* 3カラム（課題・提案・魅力）を横に並べるフレックスレイアウト */
 .lane-table {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
 .lane-row {
-  display: table-row;
+    display: flex;
+    gap: 14px;
 }
 
+/* 各列（縦レーン）のベース設定 */
 .lane-col {
-  display: table-cell;
-  width: 33.33%;
-  vertical-align: top;
-  padding: 4px;
+    flex: 1;
+    min-width: 0; /* 長いテキストが入っても列幅が壊れないようにする魔法のプロパティ */
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 10px;
+    border: 1px solid #f1f5f9;
 }
 
-/* カラムごとのヘッダー */
+/* 列ヘッダー（課題・提案・魅力のタイトルリボン） */
 .col-header {
-  padding: 6px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 8.5pt;
-  margin-bottom: 6px;
-  text-align: center;
+    font-size: 8.5pt;
+    font-weight: 700;
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
 }
 
-/* 意見カードのスタイル */
+/* ==========================================================================
+   マトリクス内の「意見カード」のデザイン
+   ========================================================================== */
 .opinion-card {
-  font-size: 8.5pt;
-  background-color: #fdfdfd;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 8px;
-  margin-bottom: 6px;
-  line-height: 1.4;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 方向性別のボーダーカラー */
-.border-danger-custom { border-left: 3px solid #dc3545 !important; }
-.border-primary-custom { border-left: 3px solid #0d6efd !important; }
-.border-success-custom { border-left: 3px solid #198754 !important; }
+.opinion-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
 
+/* 意見の種類に応じた上部のアクセントカラー線 */
+.border-danger-custom { border-top: 3px solid #ef4444; }   /* 課題：赤 */
+.border-primary-custom { border-top: 3px solid #3b82f6; }  /* 提案：青 */
+.border-success-custom { border-top: 3px solid #10b981; }  /* 魅力：緑 */
+
+/* カード内の#キーワードバッジ */
 .badge-keyword {
-  background-color: #e9ecef;
-  color: #495057;
-  font-weight: bold;
-  font-size: 7.5pt;
-  padding: 2px 5px;
-  border-radius: 3px;
-  display: inline-block;
-  margin-bottom: 4px;
+    font-size: 7.5pt;
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   レスポンシブ対応（画面が狭いときは1列に縦並びにする）
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .lane-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .lane-col {
+        margin-bottom: 4px;
+    }
 }
