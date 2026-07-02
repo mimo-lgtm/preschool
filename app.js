@@ -1,4 +1,4 @@
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzUpwP9u3eiGZL2xD1KePqRnY7JKrhbkWEpZJzMGGkmMlro2KTwugM5W72m8V5BU1eN/exec'; // 👈 新しいGASデプロイURLに書き換えてください
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwgOIK3P6wmltLLxFrPdEuiGko8u8Ty4WAFaIDLZLIrcfUWrwiXvvr0VyEKAmYuuuiK/exec'; // 👈 新しいGASデプロイURLに書き換えてください
 
 const CORE_CATEGORIES = [
   "シームレス成長支援",
