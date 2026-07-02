@@ -1,5 +1,5 @@
 // 【最重要】新しくデプロイし直したGASの「全員」権限のWebアプリURLに書き換えてください
-const GAS_API_URL = 'https://script.google.com/macros/s/XXXXX/exec'; 
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbx2SV8IPkiDeinZSt_CNoS3LogeqAtvwF9SC9jRzbxo6m8asB36S6dJiYnGi0fCJ3Vb/exec'; 
 
 const CATEGORIES = [
   "シームレス成長支援",
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const submitButton = this.querySelector('button[type="submit"]');
     submitButton.disabled = true;
-    submitButton.innerText = '送信中...';
+    submitButton.innerText = 'AIが解析・送信中...';
 
     const data = {
       category: document.getElementById('category').value,
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
       body: JSON.stringify(data)
     })
     .then(() => {
-      alert('ご意見をありがとうございました！反映します。');
+      alert('ご意見ありがとうございました！AIが内容を分析し、マトリクスへ自動構造化しました。');
       this.reset();
       fetchOpinions();
     })
@@ -59,7 +59,7 @@ function fetchOpinions() {
     })
     .catch(error => {
       console.error('Error:', error);
-      container.innerHTML = '<div class="alert alert-danger" style="font-size:9.5pt;">データの読み込みに失敗しました。GASのURLやアクセス権限（全員になっているか）を確認してください。</div>';
+      container.innerHTML = '<div class="alert alert-danger" style="font-size:9.5pt;">データの読み込みに失敗しました。GASのURLやアクセス権限を確認してください。</div>';
     });
 }
 
@@ -78,7 +78,6 @@ function renderMatrix(opinions) {
     const ideas = filtered.filter(op => op.type === '提案・アイデア');
     const merits = filtered.filter(op => op.type === '魅力・継続希望');
 
-    // 崩れないよう、flexではなく明確なdisplay:table構造で3列を表現
     let laneHtml = `
       <div class="category-lane">
         <h4 class="category-title">${cat}</h4>
@@ -110,10 +109,21 @@ function renderCards(cardsData, typeStyle) {
   }
   
   return cardsData.map(op => {
+    // AIコメントが存在する場合のみ、薄緑色のボックスでカード内に追加表示する
+    let aiCommentHtml = '';
+    if (op.aiComment && op.aiComment !== '（AIコメント生成スキップ）') {
+      aiCommentHtml = `
+        <div style="margin-top: 6px; padding: 5px; background-color: #f4f9f4; border-radius: 4px; border: 1px dashed #a2dba2; font-size: 8pt; color: #2e592e;">
+          <strong>🤖 AI考察:</strong> ${escapeHtml(op.aiComment)}
+        </div>
+      `;
+    }
+
     return `
       <div class="opinion-card border-${typeStyle}-custom">
         <div><span class="badge-keyword">#${op.keyword}</span></div>
-        <div style="color: #212529; white-space: pre-wrap;">${escapeHtml(op.content)}</div>
+        <div style="color: #212529; white-space: pre-wrap; font-weight: 500;">${escapeHtml(op.content)}</div>
+        ${aiCommentHtml}
       </div>
     `;
   }).join('');
