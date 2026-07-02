@@ -1,5 +1,5 @@
 // 【最重要】新しくデプロイし直したGASの「全員」権限のWebアプリURLに書き換えてください
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbx2SV8IPkiDeinZSt_CNoS3LogeqAtvwF9SC9jRzbxo6m8asB36S6dJiYnGi0fCJ3Vb/exec'; 
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwAFoLrPgL0vk4ktITR7zenVuMdqM4cZx-yzUYL2fn2Ip1_eYpXNVG3uZkk-rYshTsm/exec'; 
 
 const CATEGORIES = [
   "シームレス成長支援",
