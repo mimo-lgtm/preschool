@@ -1,5 +1,5 @@
 // 【最重要】新しくデプロイし直したGASの「全員」権限のWebアプリURLに書き換えてください
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwGIMORseiNH_aP193-KwyKGQXI9dQRy9FSW7L-MGZNUwUK7Vnkd7_8hwmplCAPoGjU/exec'; 
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxxb63bYicFqbhqp5NGxTFmrMvfjFbddB-FrWQBcP6dgot-1Fxwphvhp832g2NUe9tT/exec'; 
 
 const CATEGORIES = [
   "シームレス成長支援",
@@ -109,20 +109,23 @@ function renderCards(cardsData, typeStyle) {
   }
   
   return cardsData.map(op => {
-    // AIコメントが存在する場合のみ、薄緑色のボックスでカード内に追加表示する
+    // AIが補強した文章がある場合、カード内で「論理補強文」として目立たせる
     let aiCommentHtml = '';
-    if (op.aiComment && op.aiComment !== '（AIコメント生成スキップ）') {
+    if (op.aiComment && !op.aiComment.includes('確認中') && !op.aiComment.includes('スキップ')) {
       aiCommentHtml = `
-        <div style="margin-top: 6px; padding: 5px; background-color: #f4f9f4; border-radius: 4px; border: 1px dashed #a2dba2; font-size: 8pt; color: #2e592e;">
-          <strong>🤖 AI考察:</strong> ${escapeHtml(op.aiComment)}
+        <div style="margin-top: 8px; padding: 6px 8px; background-color: #f7fafc; border-left: 3px solid #3182ce; border-radius: 0 4px 4px 0; font-size: 8.5pt; color: #2d3748; line-height: 1.4;">
+          <strong style="color: #2b6cb0; font-size: 8pt; display: block; margin-bottom: 2px;">🤖 AI論理補強・アップデート:</strong>
+          ${escapeHtml(op.aiComment)}
         </div>
       `;
     }
 
     return `
-      <div class="opinion-card border-${typeStyle}-custom">
-        <div><span class="badge-keyword">#${op.keyword}</span></div>
-        <div style="color: #212529; white-space: pre-wrap; font-weight: 500;">${escapeHtml(op.content)}</div>
+      <div class="opinion-card border-${typeStyle}-custom" style="padding: 10px; margin-bottom: 8px; background: #fff; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div><span class="badge-keyword" style="font-size: 7.5pt; background: #edf2f7; padding: 2px 6px; border-radius: 4px;">#${op.keyword}</span></div>
+        <div style="color: #718096; font-size: 8.5pt; margin-top: 4px; font-style: italic; border-bottom: 1px dashed #e2e8f0; padding-bottom: 4px;">
+          「${escapeHtml(op.content)}」
+        </div>
         ${aiCommentHtml}
       </div>
     `;
