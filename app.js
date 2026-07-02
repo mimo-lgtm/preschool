@@ -12,40 +12,72 @@ const CATEGORIES = [
 document.addEventListener('DOMContentLoaded', () => {
   fetchOpinions();
 
-  document.getElementById('opinionForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+  const aiButton = document.getElementById('btnAiDraft');
+  if (!aiButton) {
+    console.error('【エラー】HTML内に「btnAiDraft」というIDのボタンが見つかりません。HTMLの記述を確認してください。');
+    return;
+  }
+
+  // AI壁打ちボタンのクリックイベント
+  aiButton.addEventListener('click', function() {
+    console.log('AI補強ボタンがクリックされました。処理を開始します。'); // 👈 ログを出して確認
     
-    const submitButton = this.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
-    submitButton.innerText = 'AIが解析・送信中...';
+    const content = document.getElementById('content').value;
+    if (!content.trim()) {
+      alert('まずは「具体的な提案・意見」の欄に、生の意見を入力してください。');
+      return;
+    }
+
+    const originalText = this.innerText;
+    this.disabled = true;
+    this.innerText = '✨ AIが文章を論理的に洗練中...';
 
     const data = {
+      action: 'ai_draft',
       category: document.getElementById('category').value,
       keyword: document.getElementById('keyword').value,
       type: document.getElementById('type').value,
-      content: document.getElementById('content').value
+      content: content
     };
+
+    console.log('GASに送信するデータ:', data);
 
     fetch(GAS_API_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
-    .then(() => {
-      alert('ご意見ありがとうございました！AIが内容を分析し、マトリクスへ自動構造化しました。');
-      this.reset();
-      fetchOpinions();
+    .then(response => {
+      console.log('GASから応答を受け取りました:', response);
+      return response.json();
+    })
+    .then(res => {
+      console.log('GASからの解析済みJSONデータ:', res);
+      if (res.status === 'success' && res.refinedText) {
+        const assistBox = document.getElementById('aiAisistBox');
+        const refinedTextElem = document.getElementById('aiRefinedText');
+        
+        if (assistBox && refinedTextElem) {
+          refinedTextElem.innerText = res.refinedText;
+          assistBox.classList.remove('d-none'); // 👈 枠を表示する
+          console.log('画面へのAIテキスト表示に成功しました。');
+        } else {
+          console.error('【エラー】HTML内に aiAisistBox または aiRefinedText が見つかりません。');
+        }
+      } else {
+        alert('AI補強文の取得に課題が発生しました。GASのログ、またはAPIキーを確認してください。');
+      }
     })
     .catch(error => {
-      console.error('Error:', error);
-      alert('送信中にエラーが発生しました。');
+      console.error('【通信エラー発生】:', error);
+      alert('AI呼び出し中に通信エラーが発生しました。詳細はコンソールを確認してください。');
     })
     .finally(() => {
-      submitButton.disabled = false;
-      submitButton.innerText = 'この内容で社会に届ける';
+      this.disabled = false;
+      this.innerText = originalText;
     });
   });
+
+  // （以下の「この案を採用する」や「最終送信」の処理は前回のままでOKです）
 });
 
 function fetchOpinions() {
