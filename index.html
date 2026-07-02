@@ -9,6 +9,44 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* 画像の大型化とレイアウト調整 */
+        .large-tree-img {
+            width: 100%;
+            max-height: 550px;
+            object-fit: contain;
+        }
+        .large-section-thumb {
+            max-height: 140px;
+            width: auto;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .category-accordion-item {
+            margin-bottom: 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .category-accordion-header {
+            background-color: #ffffff;
+            padding: 16px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        .category-accordion-header:hover {
+            background-color: #f8f9fa;
+        }
+        .category-accordion-body {
+            background-color: #fdfdfd;
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -45,20 +83,20 @@
                 </div>
 
                 <div class="row g-4 mb-4">
-                    <div class="col-lg-6">
-                        <div class="tree-image-box shadow-sm rounded-3 overflow-hidden bg-white">
-                            <img src="image/logic.jpg" alt="幼児教育ロジックツリー" class="w-100 h-100 object-fit-contain">
+                    <div class="col-lg-7">
+                        <div class="tree-image-box shadow-sm rounded-3 overflow-hidden bg-white p-2 text-center">
+                            <img src="image/logic.jpg" alt="幼児教育ロジックツリー" class="large-tree-img">
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-5">
                         <div class="card shadow-sm border-0 p-4 bg-white h-100">
                             <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom">🌱 5つの基本方針について</h5>
                             <div class="d-flex flex-column gap-3">
-                                <div class="p-2 rounded bg-light border-start border-primary border-3"><strong class="small d-block text-dark">1. シームレス成長支援（出産〜高校）</strong></div>
-                                <div class="p-2 rounded bg-light border-start border-primary border-3"><strong class="small d-block text-dark">2. 主体的な学び（子ども中心）</strong></div>
-                                <div class="p-2 rounded bg-light border-start border-primary border-3"><strong class="small d-block text-dark">3. 楽しさと好奇心（探究心）</strong></div>
-                                <div class="p-2 rounded bg-light border-start border-primary border-3"><strong class="small d-block text-dark">4. 個性・才能の開花（個別最適化）</strong></div>
-                                <div class="p-2 rounded bg-light border-start border-primary border-3"><strong class="small d-block text-dark">5. 未来を生き抜く力（非認知能力）</strong></div>
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">1. シームレス成長支援（出産〜高校）</strong></div>
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">2. 主体的な学び（子ども中心）</strong></div>
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">3. 楽しさと好奇心（探究心）</strong></div>
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">4. 個性・才能の開花（個別最適化）</strong></div>
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">5. 未来を生き抜く力（非認知能力）</strong></div>
                             </div>
                         </div>
                     </div>
@@ -68,63 +106,83 @@
                     <div class="row align-items-center g-3">
                         <div class="col-md-9">
                             <h5 class="fw-bold text-dark mb-1">みんなの意見の地図</h5>
-                            <p class="text-muted small mb-0">下の項目をクリックすると、その中にある詳しい意見（推奨タイトル・200字要約）が開きます。</p>
+                            <p class="text-muted small mb-0">下の項目をクリックすると、その中にある詳しい意見（推奨タイトル・200字要約）が開きます。最初は5つの分野のみが表示されています。</p>
                         </div>
                         <div class="col-md-3 text-end">
-                            <img src="image/river.jpg" alt="川" class="img-fluid rounded shadow-sm section-thumb" style="max-height: 70px;">
+                            <img src="image/river.jpg" alt="川" class="img-fluid large-section-thumb">
                         </div>
                     </div>
                 </div>
 
+                <!-- 最初は5つの大分類のみ並ぶコンテナ -->
                 <div id="matrixContainer"></div>
             </div>
 
             <!-- ② AI壁打ち -->
             <div class="tab-pane fade" id="ai-pane" role="tabpanel">
                 <div class="row g-4">
-                    <div class="col-lg-6">
+                    <!-- 左側：入力フォーム -->
+                    <div class="col-lg-5">
                         <div class="card shadow-sm border-0 p-4 bg-white rounded-3">
                             <div class="mb-3 text-center">
-                                <img src="image/teacher.jpg" alt="対話" class="w-100 rounded-3 shadow-sm object-fit-cover" style="height: 120px;">
+                                <img src="image/teacher.jpg" alt="対話" class="w-100 rounded-3 shadow-sm object-fit-cover" style="height: 160px;">
                             </div>
                             <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom">📝 意見の入力</h5>
                             
                             <form id="opinionForm">
                                 <div class="mb-4">
                                     <label class="form-label fw-bold small text-secondary">あなたの意見（思いついたままでOK）</label>
-                                    <textarea id="content" class="form-control form-control-custom" rows="8" placeholder="ここに自由に記入してください..." required></textarea>
+                                    <textarea id="content" class="form-control form-control-custom" rows="10" placeholder="ここに自由に子育てや教育に関する意見を記入してください..." required></textarea>
                                 </div>
-                                <div class="d-grid gap-2 pt-2">
-                                    <button type="button" id="btnAiDraft" class="btn btn-outline-dark fw-bold py-25 rounded-pill shadow-sm transition-btn">✨ まずAIに文章を綺麗に整えてもらう</button>
-                                    <button type="submit" id="btnSubmit" class="btn btn-primary fw-bold py-25 rounded-pill shadow-sm transition-btn" disabled>🚀 この内容で送信する</button>
+                                <div class="d-grid gap-2">
+                                    <button type="button" id="btnAiAnalysis" class="btn btn-dark fw-bold py-25 rounded-pill shadow-sm">✨ 1. 意見を送信してAIと壁打ちする</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                     
-                    <div class="col-lg-6">
+                    <!-- 右側：AI対話スペース（論点表示、5視点肉付け、200字要約、推奨タイトルを同時に一画面で展開） -->
+                    <div class="col-lg-7">
                         <div class="card shadow-sm border-0 p-4 bg-white rounded-3 h-100 d-flex flex-column" id="aiResponseCard">
-                            <h5 class="fw-bold text-dark mb-2 pb-2 border-bottom">🤖 AI文章推敲スペース</h5>
+                            <h5 class="fw-bold text-dark mb-2 pb-2 border-bottom">🤖 AI思考・洗練スペース</h5>
                             
-                            <div id="aiAssistBox" class="p-4 border border-primary-subtle rounded-3 bg-light d-none flex-grow-1 d-flex flex-column justify-content-between shadow-inner">
-                                <div>
-                                    <div class="mb-3">
-                                        <span class="badge bg-dark px-2 py-1 mb-1">💡 推奨タイトル</span>
-                                        <div id="aiTitleText" class="fw-bold text-dark p-2 bg-white rounded border small"></div>
+                            <!-- 結果出力ボックス -->
+                            <div id="aiAssistBox" class="d-none flex-grow-1 d-flex flex-column gap-3">
+                                
+                                <!-- 1. 論点の概要 -->
+                                <div class="p-3 bg-light border rounded">
+                                    <span class="badge bg-secondary mb-2">2. 意見の論点・概要</span>
+                                    <div id="aiSummaryText" class="text-dark small" style="white-space: pre-wrap;"></div>
+                                </div>
+
+                                <!-- 2. 5つの視点からの肉付け -->
+                                <div class="p-3 bg-light border rounded">
+                                    <span class="badge bg-dark mb-2">3. 5つの視点による深掘り</span>
+                                    <div id="aiPerspectivesText" class="text-dark small" style="white-space: pre-wrap; line-height: 1.5;"></div>
+                                </div>
+
+                                <!-- 3. 推奨タイトル & 200字要約 -->
+                                <div class="p-3 border border-primary-subtle rounded bg-white shadow-sm">
+                                    <div class="mb-2">
+                                        <span class="badge bg-primary mb-1">👑 生成された推奨タイトル</span>
+                                        <h6 id="aiTitleText" class="fw-bold text-primary mb-0 p-1"></h6>
                                     </div>
                                     <div>
-                                        <span class="badge bg-primary px-2 py-1 mb-1">📝 AI 200字要約案</span>
-                                        <p id="aiRefinedText" class="text-dark bg-white p-2 rounded border small mb-0" style="line-height: 1.6; white-space: pre-wrap;"></p>
+                                        <span class="badge bg-primary mb-1">📝 200字要約</span>
+                                        <p id="aiRefinedText" class="text-dark small mb-0" style="line-height: 1.6; white-space: pre-wrap;"></p>
                                     </div>
                                 </div>
-                                <div class="text-end pt-3 border-top mt-3">
-                                    <button type="button" id="btnAdoptAi" class="btn btn-primary fw-bold px-4 py-2 rounded-pill shadow-sm">この200字要約を入力欄に使う</button>
+
+                                <!-- 4. 提案箱への投稿確認ボタン -->
+                                <div class="text-center pt-2 mt-auto">
+                                    <button type="button" id="btnSubmitToBox" class="btn btn-primary btn-lg fw-bold px-5 rounded-pill shadow">📥 この内容で提案箱に投稿する</button>
                                 </div>
                             </div>
                             
+                            <!-- 初期プレースホルダー -->
                             <div id="aiPlaceholder" class="border border-dashed rounded-3 p-5 text-center my-auto text-muted small bg-light">
-                                <span style="font-size: 2rem;" class="d-block mb-2">💡</span>
-                                「AIに文章を綺麗に整えてもらう」を押すと、ここに推奨タイトルと200字要約が表示されます。
+                                <span style="font-size: 2.5rem;" class="d-block mb-2">💡</span>
+                                左側に意見を入力し、「AIと壁打ちする」ボタンを押すと、論点の整理、5つの視点による肉付け、200字要約、推奨タイトルが同時にここに構築されます。
                             </div>
                         </div>
                     </div>
@@ -137,13 +195,14 @@
                     <div class="row align-items-center g-3">
                         <div class="col-md-9">
                             <h5 class="fw-bold text-dark mb-2">📥 提案箱（届いた意見の一覧）</h5>
-                            <p class="text-muted small mb-0">これまでに届いたすべての意見が、大分類ごとに格納されています。</p>
+                            <p class="text-muted small mb-0">これまでに届いた意見が5つの分野ごとに格納されています。最初は分野の項目のみが表示されています。</p>
                         </div>
                         <div class="col-md-3 text-end">
-                            <img src="image/ar.jpg" alt="未来" class="img-fluid rounded shadow-sm section-thumb" style="max-height: 70px;">
+                            <img src="image/ar.jpg" alt="未来" class="img-fluid large-section-thumb">
                         </div>
                     </div>
                 </div>
+                <!-- 最初は5つの分野の項目のみ並ぶコンテナ -->
                 <div id="listContainer"></div>
             </div>
 
