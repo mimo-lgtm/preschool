@@ -2,7 +2,7 @@
     // ==========================================
     // 🌐 設定エリア（GASのWebアプリURL）
     // ==========================================
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwgOIK3P6wmltLLxFrPdEuiGko8u8Ty4WAFaIDLZLIrcfUWrwiXvvr0VyEKAmYuuuiK/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbznDp4lfmJL1zOmfinjT0d1cGmc7tQvKfHDhuCP12Bmpr80CAALt7wBx8kvhKXAyo9j/exec";
 
     // 固定された5つの大分類
     const MAIN_CATEGORIES = [
