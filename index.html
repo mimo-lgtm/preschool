@@ -11,8 +11,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
         body { font-family: 'Noto Sans JP', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
-        .tab-active { border-bottom: 3px solid #4f46e5; color: #4f46e5; font-weight: 700; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -21,69 +20,85 @@
 
     <!-- ヘッダー -->
     <header class="gradient-bg text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <i class="fa-solid fa-child text-xl text-yellow-300"></i>
+                <div class="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <i class="fa-solid fa-child text-2xl text-yellow-300"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight">幼児教育・子育て支援</h1>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">幼児教育・子育て支援</h1>
                     <p class="text-xs text-indigo-100 mt-0.5">市民意見オープンデータプラットフォーム (Vox Populi AI)</p>
                 </div>
             </div>
             
             <!-- ナビゲーション（3ページ構成の切り替えタブ） -->
             <nav class="flex bg-black/20 p-1 rounded-xl backdrop-blur-sm">
-                <button id="navPage1" class="px-4 py-1.5 rounded-lg text-xs font-medium transition-all bg-white text-indigo-900 shadow-sm">① 意見投稿・壁打ち</button>
-                <button id="navPage2" class="px-4 py-1.5 rounded-lg text-xs font-medium transition-all text-white hover:bg-white/10">② オープンデータ閲覧</button>
-                <button id="navPage3" class="px-4 py-1.5 rounded-lg text-xs font-medium transition-all text-white hover:bg-white/10">③ 生成アセット・画像確認</button>
+                <button id="navPage1" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-900 shadow-sm">① 意見投稿・壁打ち</button>
+                <button id="navPage2" class="px-4 py-2 rounded-lg text-xs font-medium transition-all text-white hover:bg-white/10">② オープンデータ閲覧</button>
+                <button id="navPage3" class="px-4 py-2 rounded-lg text-xs font-medium transition-all text-white hover:bg-white/10">③ 生成アセット・画像確認</button>
             </nav>
+
+            <div class="flex items-center gap-4 text-sm bg-black/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 本日の提案: <strong id="todayCount" class="text-yellow-300">0</strong> 件</span>
+                <span class="text-indigo-200">|</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-database text-indigo-300"></i> 蓄積: <strong id="totalCount" class="text-yellow-300">0</strong> 件</span>
+            </div>
         </div>
     </header>
 
-    <!-- メインコンテンツ -->
-    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8設定">
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         
         <!-- ========================================== -->
         <!-- 📄 ページ 1: 意見投稿・AI壁打ち画面 -->
         <!-- ========================================== -->
         <section id="page1" class="space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
                 <!-- 左側：入力パネル -->
                 <div class="lg:col-span-6 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-4">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><i class="fa-solid fa-pen-to-square"></i></div>
-                        <h2 class="text-lg font-bold text-slate-900">ご意見・アイデアの入力</h2>
+                    <div class="flex items-center gap-2.5 mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </div>
+                        <h2 class="text-lg font-bold text-slate-900">あなたの意見を届ける</h2>
                     </div>
-                    <p class="text-xs text-slate-500 leading-relaxed">
-                        箇条書きやメモ書きでも構いません。AIが自動で論理を整理し、適切な大中小分類にマッピングします。
+                    <p class="text-sm text-slate-500 leading-relaxed">
+                        箇条書き、メモ書き、愚痴のような形でも構いません。AIが自動で論理を整理し、適切な大中小分類にマッピングしてデータベース（Spreadsheet）へ安全に格納します。
                     </p>
-                    <textarea id="opinionInput" rows="8" class="w-full rounded-xl border border-slate-200 p-4 text-sm shadow-inner focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all resize-none placeholder-slate-400" placeholder="（例）保育園の送り迎えの時間が厳しくて、仕事との両立が本当に大変。せめてあと30分でも延長保育の申請がスマホから簡単にできるようになれば助かるのですが…。"></textarea>
                     
-                    <div class="flex gap-4">
-                        <button id="btnAnalyze" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-medium text-sm py-3 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 group">
-                            <i class="fa-solid fa-wand-magic-sparkles text-indigo-400 group-hover:rotate-12 transition-transform"></i>
-                            <span>AIに確認（壁打ち）</span>
-                        </button>
-                        <button id="btnSubmit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm py-3 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-paper-plane"></i>
-                            <span>この内容で最終送信</span>
-                        </button>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="opinionInput" class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">ご意見・アイデア（自由記述）</label>
+                            <textarea id="opinionInput" rows="7" class="w-full rounded-xl border border-slate-200 p-3.5 text-sm shadow-inner focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all resize-none placeholder-slate-400" placeholder="（例）保育園の送り迎えの時間が厳しくて、仕事との両立が本当に大変。せめてあと30分でも延長保育の申請がスマホから簡単にできるようになれば助かるのですが…。あと、地域で子供を預かり合う仕組みももっとオープンに広がってほしい。"></textarea>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button id="btnAnalyze" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-medium text-sm py-3 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 group disabled:opacity-50 disabled:pointer-events-none">
+                                <i class="fa-solid fa-wand-magic-sparkles text-indigo-400 group-hover:rotate-12 transition-transform"></i>
+                                <span>AIに確認（壁打ち）</span>
+                            </button>
+                            <button id="btnSubmit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-indigo-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>最終送信</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 右側：AI構造化プレビュー -->
+                <!-- 右側：AI構造化プレビューパネル -->
                 <div class="lg:col-span-6 space-y-4">
                     <div id="resultBox" class="bg-gradient-to-b from-indigo-900 to-slate-900 text-white rounded-2xl shadow-xl border border-slate-800 p-6 space-y-5 hidden">
                         <div class="flex items-center justify-between border-b border-white/10 pb-3">
                             <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-robot"></i></div>
+                                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-yellow-400">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
                                 <div>
                                     <h3 class="font-bold text-sm">🤖 AI構造化マッピング案</h3>
                                     <p class="text-[10px] text-slate-400">データ解析エンジンがリアルタイム生成</p>
                                 </div>
                             </div>
-                            <span class="text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md font-medium">解析完了</span>
+                            <span class="text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md font-medium">解析成功</span>
                         </div>
 
                         <div class="space-y-4 text-sm">
@@ -91,32 +106,34 @@
                                 <span class="block text-[11px] font-medium text-slate-400 mb-1">💡 生成されたタイトル案</span>
                                 <div id="resTitle" class="text-base font-bold text-yellow-300 tracking-wide bg-white/5 p-2.5 rounded-lg border border-white/5"></div>
                             </div>
+
                             <div class="grid grid-cols-3 gap-2">
                                 <div>
                                     <span class="block text-[11px] font-medium text-slate-400 mb-1">📂 大分類</span>
-                                    <div id="resCategory" class="bg-white/5 px-2 py-1.5 rounded-lg text-xs font-semibold text-indigo-200 border border-white/5 text-center truncate"></div>
+                                    <div id="resCategory" class="bg-white/5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-indigo-200 border border-white/5 text-center truncate"></div>
                                 </div>
                                 <div>
                                     <span class="block text-[11px] font-medium text-slate-400 mb-1">🌿 中分類</span>
-                                    <div id="resMidCat" class="bg-white/5 px-2 py-1.5 rounded-lg text-xs text-slate-200 border border-white/5 text-center truncate"></div>
+                                    <div id="resMidCat" class="bg-white/5 px-2.5 py-1.5 rounded-lg text-xs text-slate-200 border border-white/5 text-center truncate"></div>
                                 </div>
                                 <div>
                                     <span class="block text-[11px] font-medium text-slate-400 mb-1">🏷️ 小分類</span>
-                                    <div id="resSubCat" class="bg-white/5 px-2 py-1.5 rounded-lg text-xs text-slate-200 border border-white/5 text-center truncate"></div>
+                                    <div id="resSubCat" class="bg-white/5 px-2.5 py-1.5 rounded-lg text-xs text-slate-200 border border-white/5 text-center truncate"></div>
                                 </div>
                             </div>
+
                             <div>
                                 <span class="block text-[11px] font-medium text-slate-400 mb-1">📝 200字要約</span>
                                 <div id="resSummary" class="text-xs text-slate-300 bg-white/5 p-3 rounded-lg leading-relaxed border border-white/5 whitespace-pre-wrap"></div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- 未分析時のプレビュー待機表示 -->
-                    <div id="resultPlaceholder" class="h-full border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center p-12 text-center text-slate-400">
-                        <i class="fa-solid fa-wand-magic-sparkles text-3xl mb-3 text-slate-300"></i>
-                        <p class="text-sm font-medium">AI壁打ち結果がここに表示されます</p>
-                        <p class="text-xs mt-1 text-slate-400">左側のボタンを押すと、文章の構造化分析が始まります。</p>
+                    <div id="resultPlaceholder" class="h-full min-h-[350px] border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center p-12 text-center text-slate-400 bg-white/50">
+                        <i class="fa-solid fa-wand-magic-sparkles text-3xl mb-3 text-slate-300 animate-pulse"></i>
+                        <p class="text-sm font-medium text-slate-600">AI壁打ち結果がここに表示されます</p>
+                        <p class="text-xs mt-1 text-slate-400 max-w-xs leading-relaxed">左側の入力欄に意見を記入し、「AIに確認（壁打ち）」ボタンを押してください。</p>
                     </div>
                 </div>
             </div>
@@ -126,19 +143,25 @@
         <!-- 📄 ページ 2: オープンデータ閲覧（タイムライン） -->
         <!-- ========================================== -->
         <section id="page2" class="space-y-6 hidden">
+            <!-- フィルターバー -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-indigo-500"></i> 蓄積された市民意見データ 一覧
+                <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+                    <i class="fa-solid fa-list-ul text-indigo-500"></i>
+                    <span>リアルタイム市民意見タイムライン</span>
                 </div>
-                <div class="relative w-full sm:w-64">
+                <div class="relative w-full sm:w-72">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input type="text" id="searchInput" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-xs focus:outline-none focus:border-indigo-500 focus:bg-white transition-all" placeholder="キーワードで絞り込み...">
+                    <input type="text" id="searchInput" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-xs focus:outline-none focus:border-indigo-500 focus:bg-white transition-all shadow-inner" placeholder="キーワード・大分類・ハッシュタグで絞り込み...">
                 </div>
             </div>
 
             <!-- タイムライン表示エリア -->
-            <div id="opinionsList" class="space-y-4 max-h-[700px] overflow-y-auto pr-2 hide-scrollbar">
-                <!-- JavaScriptで動的生成 -->
+            <div id="opinionsList" class="space-y-4 max-h-[750px] overflow-y-auto pr-2 hide-scrollbar">
+                <!-- JavaScript経由でローディングインジケータ、またはカード群がフルレンダリングされます -->
+                <div class="text-center py-12 text-slate-400 space-y-3 bg-white rounded-2xl border border-slate-200">
+                    <i class="fa-solid fa-circle-notch animate-spin text-3xl text-indigo-500"></i>
+                    <p class="text-xs">Spreadsheetからリアルタイムデータを同期中...</p>
+                </div>
             </div>
         </section>
 
@@ -147,50 +170,51 @@
         <!-- ========================================== -->
         <section id="page3" class="space-y-6 hidden">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-6">
-                <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><i class="fa-solid fa-image"></i></div>
+                <div class="flex items-center gap-2.5 border-b border-slate-100 pb-4">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                        <i class="fa-solid fa-image"></i>
+                    </div>
                     <div>
                         <h2 class="text-lg font-bold text-slate-900">生成アセットギャラリー</h2>
-                        <p class="text-xs text-slate-400">提案に関連するビジュアルやイメージ、キャラクター、図面データをここに反映します</p>
+                        <p class="text-xs text-slate-400">提出された意見を基に、AIがバックグラウンドで具現化したビジュアル構想案の一覧です</p>
                     </div>
                 </div>
 
-                <!-- グラフィックス・画像配置グリッド -->
+                <!-- グラフィックスグリッド -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- サンプル画像カード 1 -->
-                    <div class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shadow-sm hover:shadow-md transition-all">
+                    <!-- アセット 1 -->
+                    <div class="border border-slate-200/80 rounded-xl overflow-hidden bg-slate-50 shadow-sm hover:shadow-md transition-all group">
                         <div class="aspect-video w-full bg-slate-200 relative flex items-center justify-center overflow-hidden">
-                            <!-- ダミー画像（必要に応じて実際のURL等へ差し替え可能です） -->
-                            <img src="https://images.unsplash.com/photo-1541599540903-216a46ca1ad0?w=500&auto=format&fit=crop&q=60" alt="公園イメージ" class="w-full h-full object-cover">
-                            <span class="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm">イメージグラフィック</span>
+                            <img src="https://images.unsplash.com/photo-1541599540903-216a46ca1ad0?w=600&auto=format&fit=crop&q=80" alt="公園インフラ" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-2 left-2 bg-slate-900/80 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm font-medium">空間設計プロトタイプ</span>
                         </div>
                         <div class="p-4 space-y-1.5">
-                            <h4 class="text-sm font-bold text-slate-800">インクルーシブ公園の設計案</h4>
-                            <p class="text-xs text-slate-500 line-clamp-2">すべての子どもたちが安全に交じり合って遊べる、段差の少ない自然調和型プレイエリアの構想図。</p>
+                            <h4 class="text-sm font-bold text-slate-800 tracking-tight">インクルーシブ公園の設計・配置案</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed line-clamp-2">すべての子どもたちが障がいの有無に関わらず安全に交じり合って遊べる、段差のない自然調和型プレイエリアの構想図。</p>
                         </div>
                     </div>
 
-                    <!-- サンプル画像カード 2 (Chihuahuaアバター等の汎用クリエイティブ枠) -->
-                    <div class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shadow-sm hover:shadow-md transition-all">
-                        <div class="aspect-video w-full bg-indigo-100 relative flex items-center justify-center overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=500&auto=format&fit=crop&q=60" alt="マスコットキャラクター" class="w-full h-full object-cover">
-                            <span class="absolute top-2 left-2 bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded">PRアバター</span>
+                    <!-- アセット 2 -->
+                    <div class="border border-slate-200/80 rounded-xl overflow-hidden bg-slate-50 shadow-sm hover:shadow-md transition-all group">
+                        <div class="aspect-video w-full bg-indigo-50 relative flex items-center justify-center overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&auto=format&fit=crop&q=80" alt="チワワキャラクター" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-2 left-2 bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded font-medium">PRマスコット</span>
                         </div>
                         <div class="p-4 space-y-1.5">
-                            <h4 class="text-sm font-bold text-slate-800">子育て応援団 マスコットキャラクター</h4>
-                            <p class="text-xs text-slate-500 line-clamp-2">親しみやすさを最優先にデザインされた、地域コミュニティ活性化のための啓発アバターイメージ。</p>
+                            <h4 class="text-sm font-bold text-slate-800 tracking-tight">子育て応援団 伴走アバターデザイン</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed line-clamp-2">親しみやすさを最優先にデザインされた、地域コミュニティや子育て相談窓口を活性化するためのチワワモチーフのデジタルマスコット。</p>
                         </div>
                     </div>
 
-                    <!-- サンプル画像カード 3 -->
-                    <div class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shadow-sm hover:shadow-md transition-all">
+                    <!-- アセット 3 -->
+                    <div class="border border-slate-200/80 rounded-xl overflow-hidden bg-slate-50 shadow-sm hover:shadow-md transition-all group">
                         <div class="aspect-video w-full bg-slate-200 relative flex items-center justify-center overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=500&auto=format&fit=crop&q=60" alt="知育イベント" class="w-full h-full object-cover">
-                            <span class="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm">活動実績</span>
+                            <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=600&auto=format&fit=crop&q=80" alt="ワークショップ" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-2 left-2 bg-slate-900/80 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm font-medium">活動イメージ</span>
                         </div>
                         <div class="p-4 space-y-1.5">
-                            <h4 class="text-sm font-bold text-slate-800">デジタル×アート幼児ワークショップ</h4>
-                            <p class="text-xs text-slate-500 line-clamp-2">廃材アートに少しのセンサー技術を組み合わせた、五感を刺激する週末イベントの様子。</p>
+                            <h4 class="text-sm font-bold text-slate-800 tracking-tight">デジタル×廃材アート幼児ワークショップ</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed line-clamp-2">工場の端材や段ボールに少しのセンサー技術を組み合わせ、子どもたちが五感をフルに使って巨大な秘密基地を創造する週末イベントのイメージ。</p>
                         </div>
                     </div>
                 </div>
@@ -206,222 +230,7 @@
         </div>
     </footer>
 
-    <!-- スクリプト領域 -->
-    <script>
-        // ====================================================================
-        // ⚠️ 【設定】ここにあなたのGASウェブアプリURLを貼り付けてください
-        // ====================================================================
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyqu88PgyLyB02tf1TVxHAfzRJH6ICAj0X9DZtB7x3SWnwYSx_KjdOw6kTBj5MxQgm_/exec"; 
-
-        let allOpinions = [];
-
-        // 15件の模擬データ（GASが空、または通信失敗時のバックアップ用）
-        const MOCK_OPINIONS = [
-            { id: 1, timestamp: "2026-06-15T10:23:00.000Z", category: "シームレス成長支援", title: "幼保小連携の強化", summary: "幼稚園から小学校への移行期における環境変化のストレスを低減するため、合同研修や相互の授業見学を定期化するべきです。", content: "子供が小学校に上がった時のギャップ（小1の壁）が心配です。幼稚園と小学校で情報共有や交流をもっとスムーズにしてほしいです。", smallCat: "小1の壁", midCat: "幼保小連携", status: "表示" },
-            { id: 2, timestamp: "2026-06-15T08:12:00.000Z", category: "主体的な学び", title: "屋外遊具のデジタル化", summary: "従来の公園遊具にQRコードなどを設置し、デジタルスタンプラリーや遊び方の解説動画が見られる仕組みを試験導入する提案。", content: "公園の遊具に飽き気味の子供のために、スマホと連動した宝探しゲームができるようなデジタル要素を少し取り入れてほしい。", smallCat: "屋外遊具", midCat: "遊び場確保", status: "表示" },
-            { id: 3, timestamp: "2026-06-14T15:45:00.000Z", category: "楽しさと好奇心", title: "自然体験スペース", summary: "都市部の子どもたちが土や虫、植物と日常的に触れ合えるミニビオトープや泥遊び専用エリアを公営公園内に新設する。", content: "もっと泥遊びや虫捕りが自由にできる自然豊かな場所が街中に欲しい。綺麗すぎる公園ばかりで子供が物足りなそうにしている。", smallCat: "自然体験", midCat: "環境整備", status: "表示" },
-            { id: 4, timestamp: "2026-06-14T02:30:00.000Z", category: "個性・才能の開花", title: "特異才能の早期発見", summary: "特定の分野（算数、アート、音楽など）で突出した才能を示す幼児に対し、専門家が個別にカリキュラムを提供する相談窓口の設置。", content: "うちの子は特定のパズルだけ異常に得意なのですが、ギフテッド教育のような、個性を伸ばせる場所が地域にあれば知りたい。", smallCat: "ギフテッド", midCat: "個別最適化", status: "表示" },
-            { id: 5, timestamp: "2026-06-13T11:20:00.000Z", category: "未来を生き抜く力", title: "幼児ITリテラシー", summary: "5歳児クラスから、タブレットを用いた創作活動や視覚的なプログラミング体験を週に1回程度導入し、ITに親しむ土壌を作る。", content: "小さいうちからスマホやタブレットを触らせることに不安もあるが、どうせなら正しくクリエイティブに使う方法を教えてほしい。", smallCat: "デジタル化", midCat: "情報教育", status: "表示" },
-            { id: 6, timestamp: "2026-06-12T07:05:00.000Z", category: "シームレス成長支援", title: "24時間相談窓口", summary: "深夜の夜泣きや突発的な育児不安に寄り添うため、AIチャットボットと専門助産師が連携した24時間体制のLINE相談を強化する。", content: "夜中に子どもが泣き止まない時、孤独でネットの不確かな情報に振り回されて不安になります。信頼できる24時間窓口が欲しい。", smallCat: "メンタルケア", midCat: "育児相談", status: "表示" },
-            { id: 7, timestamp: "2026-06-11T18:14:00.000Z", category: "主体的な学び", title: "移動式図書館の充実", summary: "絵本や児童書を専門に乗せた移動図書館車を、保育園の降園時間に合わせて各地域の公園や広場に巡回させるプロジェクト。", content: "図書館が遠いので、保育園の帰りに絵本を気軽に借りられる移動図書館のような車が、週に数回でも回ってきてくれたら嬉しい。", smallCat: "絵本巡回", midCat: "地域読書推進", status: "表示" },
-            { id: 8, timestamp: "2026-06-11T04:50:00.000Z", category: "楽しさと好奇心", title: "プロ演奏家と遊ぶ会", summary: "地域の公民館で、乳幼児が床に寝転びながら本物のオーケストラ楽器の響きを間近で体感できる、五感を刺激する音遊びフェス。", content: "赤ちゃん連れだと普通のコンサートに行けないので、騒いでも泣いてもお互い様な、生演奏を体感できるイベントを増やして。", smallCat: "音感育成", midCat: "文化芸術触発", status: "表示" },
-            { id: 9, timestamp: "2026-06-10T13:22:00.000Z", category: "個性・才能の開花", title: "多文化共生キッズラボ", summary: "外国籍のルーツを持つ子どもたちと、地域の幼児が言葉の壁を超えてデザインやボディーランゲージで協働する国際交流ワークショップ。", content: "地域に外国人のファミリーが増えたので、子どもたちが小さいうちから自然に多文化に触れ合えるコミュニティを作ってほしい。", smallCat: "多文化共生", midCat: "グローバル推進", status: "表示" },
-            { id: 10, timestamp: "2026-06-09T09:11:00.000Z", category: "未来を生き抜く力", title: "幼児向け金銭教育", summary: "お買い物ごっこを通じて「お金の大切さ」や「物との交換」を体験的に学ぶ、4〜5歳児向けのオリジナル金融教育プログラムの展開。", content: "キャッシュレス決済ばかり見せているので、子どもがお金の価値を理解できているか不安。簡単な金銭感覚を養う講座が欲しい。", smallCat: "マネーリテラシー", midCat: "キャリア教育", status: "表示" },
-            { id: 11, timestamp: "2026-06-08T16:40:00.000Z", category: "その他", title: "病児保育の予約改善", summary: "当日朝の急な発熱時でも、地域の提携病児保育室の空き状況をリアルタイムに一元確認でき、ワンタップで予約が確定するシステム。", content: "子供が急に熱を出した時、病児保育の電話がどこも繋がらず絶望します。空き状況の確認と予約を即座にネットで完結させて。", smallCat: "病児保育", midCat: "インフラ改善", status: "表示" },
-            { id: 12, timestamp: "2026-06-07T12:01:00.000Z", category: "シームレス成長支援", title: "父親の育児サークル", summary: "パパたちが気軽に集まり、育児の悩み共有やDIY玩具づくりを行う、土曜日開催のコミュニティスペースの運営支援。", content: "母親向けのサークルは多いが、父親が孤立しがち。土日にパパと子どもが一緒に参加して友達を作れるイベントがもっと必要。", smallCat: "父親支援", midCat: "パパサークル", status: "表示" },
-            { id: 13, timestamp: "2026-06-06T03:15:00.000Z", category: "主体的な学び", title: "廃材アートスタジオ", summary: "地域の工場から出る端材や段ボールを安全に加工し、子どもたちが巨大なオブジェや秘密基地を自由に工作できる常設スタジオの設置。", content: "家だと汚れたり場所をとるような、ダイナミックな工作や絵の具遊びを、思いっきりさせてあげられる工作特化の施設がほしい。", smallCat: "造形あそび", midCat: "アート教育", status: "表示" },
-            { id: 14, timestamp: "2026-06-05T10:33:00.000Z", category: "楽しさと好奇心", title: "商店街で職業プチ体験", summary: "地元の商店街と連携し、3〜5歳児がお花屋さんやパン屋さんのお手伝いをプチ体験し、地域住民とふれあうスタンプイベント。", content: "キッザニアはまだ早い年齢の子でも、地元のお店の人と挨拶したり、ちょっとだけお手伝いができるような温かい企画をしてほしい。", smallCat: "地域交流", midCat: "職業体験", status: "表示" },
-            { id: 15, timestamp: "2026-06-04T14:19:00.000Z", category: "未来を生き抜く力", title: "防災キッズキャンプ", summary: "幼児と保護者が一緒に、テント設営やポリ袋を使った調理、暗闇体験などを通じて楽しく実践的な生存スキルを学ぶ防災教室。", content: "大災害が起きた時、幼児連れでどう生き延びるか不安。子どもが怖がらずに、遊び感覚で防災を学べるキャンプがあったらいいな。", smallCat: "防災教育", midCat: "安全対策", status: "表示" }
-        ];
-
-        // ページ読み込み完了時の処理
-        document.addEventListener('DOMContentLoaded', () => {
-            initNavigation();
-            fetchOpinions();
-
-            document.getElementById('btnAnalyze').addEventListener('click', handleAnalyze);
-            document.getElementById('btnSubmit').addEventListener('click', handleSubmit);
-            document.getElementById('searchInput').addEventListener('input', handleSearch);
-        });
-
-        // 🗺️ 3ページ構成切り替えナビゲーションロジック
-        function initNavigation() {
-            const navs = [
-                { btn: document.getElementById('navPage1'), page: document.getElementById('page1') },
-                { btn: document.getElementById('navPage2'), page: document.getElementById('page2') },
-                { btn: document.getElementById('navPage3'), page: document.getElementById('page3') }
-            ];
-
-            navs.forEach(target => {
-                target.btn.addEventListener('click', () => {
-                    navs.forEach(n => {
-                        // ボタン状態のトグル
-                        n.btn.className = "px-4 py-1.5 rounded-lg text-xs font-medium transition-all text-white hover:bg-white/10";
-                        // ページの非表示
-                        n.page.classList.add('hidden');
-                    });
-                    // アクティブなボタンとページを活性化
-                    target.btn.className = "px-4 py-1.5 rounded-lg text-xs font-medium transition-all bg-white text-indigo-900 shadow-sm";
-                    target.page.classList.remove('hidden');
-                });
-            });
-        }
-
-        // 🔄 データベースデータ同期
-        async function fetchOpinions() {
-            try {
-                const res = await fetch(GAS_URL);
-                let data = await res.json();
-                
-                // 構文エラーを修正：正しくArray.isArrayでチェックを実施
-                if (!Array.isArray(data) || data.length === 0) {
-                    allOpinions = [...MOCK_OPINIONS];
-                } else {
-                    allOpinions = data;
-                }
-            } catch (err) {
-                console.warn('GAS通信エラーのため模擬データで起動します:', err);
-                allOpinions = [...MOCK_OPINIONS];
-            }
-            renderOpinions(allOpinions);
-        }
-
-        // 🧠 AI壁打ちアクション（バグ修復版）
-        async function handleAnalyze() {
-            const content = document.getElementById('opinionInput').value.trim();
-            if (!content) return alert('ご意見・アイデアを入力してください。');
-
-            toggleButtons(true);
-            
-            try {
-                const res = await fetch(GAS_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'analyze', content: content })
-                });
-                const data = await res.json();
-
-                if (data.status === 'success') {
-                    document.getElementById('resTitle').textContent = data.result.推奨タイトル || '無題の提案';
-                    document.getElementById('resCategory').textContent = data.result.大分類 || 'その他';
-                    document.getElementById('resMidCat').textContent = data.result.中分類 || '未設定';
-                    document.getElementById('resSubCat').textContent = data.result.小分類 || '未設定';
-                    document.getElementById('resSummary').textContent = data.result.要約200 || content;
-                    
-                    document.getElementById('resultBox').classList.remove('hidden');
-                    document.getElementById('resultPlaceholder').classList.add('hidden');
-                } else {
-                    alert('分析エラー: ' + data.message);
-                }
-            } catch (err) {
-                alert('GASへの接続に失敗しました。URLまたはウェブアプリのデプロイ設定を再確認してください。');
-                console.error(err);
-            } finally {
-                toggleButtons(false);
-            }
-        }
-
-        // 🚀 最終確定データ送信
-        async function handleSubmit() {
-            const content = document.getElementById('opinionInput').value.trim();
-            if (!content) return alert('ご意見・アイデアを入力してください。');
-
-            toggleButtons(true);
-
-            const isAnalyzed = !document.getElementById('resultBox').classList.contains('hidden');
-            const payload = {
-                action: 'submit',
-                content: content,
-                title: isAnalyzed ? document.getElementById('resTitle').textContent : '',
-                category: isAnalyzed ? document.getElementById('resCategory').textContent : '',
-                midCat: isAnalyzed ? document.getElementById('resMidCat').textContent : '',
-                subCat: isAnalyzed ? document.getElementById('resSubCat').textContent : '',
-                summary: isAnalyzed ? document.getElementById('resSummary').textContent : ''
-            };
-
-            try {
-                const res = await fetch(GAS_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-
-                if (data.status === 'success') {
-                    alert('データベースへの格納が成功しました！');
-                    document.getElementById('opinionInput').value = '';
-                    document.getElementById('resultBox').classList.add('hidden');
-                    document.getElementById('resultPlaceholder').classList.remove('hidden');
-                    fetchOpinions();
-                } else {
-                    alert('送信エラー: ' + data.message);
-                }
-            } catch (err) {
-                alert('通信に失敗しました。');
-                console.error(err);
-            } finally {
-                toggleButtons(false);
-            }
-        }
-
-        // 📋 タイムライン出力
-        function renderOpinions(list) {
-            const listEl = document.getElementById('opinionsList');
-            listEl.innerHTML = '';
-
-            if (list.length === 0) {
-                listEl.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-slate-400">該当データがありません</div>`;
-                return;
-            }
-
-            list.forEach(op => {
-                const dateStr = op.timestamp ? new Date(op.timestamp).toLocaleString('ja-JP') : '日付不明';
-                const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3 animate-fade-in";
-                card.innerHTML = `
-                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
-                        <div class="flex items-center gap-2">
-                            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 font-semibold rounded-md">${op.category || 'その他'}</span>
-                            ${op.midCat ? `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md">${op.midCat}</span>` : ''}
-                            ${op.smallCat ? `<span class="text-slate-400 font-medium">#${op.smallCat}</span>` : ''}
-                        </div>
-                        <span class="text-slate-400"><i class="fa-regular fa-clock"></i> ${dateStr}</span>
-                    </div>
-                    <h4 class="font-bold text-slate-900 text-base">${op.title || '無題の提案'}</h4>
-                    <p class="text-sm text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-100">${op.summary || op.content}</p>
-                    <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-50 truncate">
-                        <i class="fa-solid fa-comment-dots text-slate-300"></i> 元文: ${op.content}
-                    </div>
-                `;
-                listEl.appendChild(card);
-            });
-        }
-
-        // 🔍 キーワード検索
-        function handleSearch(e) {
-            const query = e.target.value.toLowerCase().trim();
-            if (!query) {
-                renderOpinions(allOpinions);
-                return;
-            }
-            const filtered = allOpinions.filter(op => 
-                (op.title && op.title.toLowerCase().includes(query)) ||
-                (op.content && op.content.toLowerCase().includes(query)) ||
-                (op.summary && op.summary.toLowerCase().includes(query)) ||
-                (op.category && op.category.toLowerCase().includes(query))
-            );
-            renderOpinions(filtered);
-        }
-
-        // ⏳ ローディングボタン制御
-        function toggleButtons(disabled) {
-            document.getElementById('btnAnalyze').disabled = disabled;
-            document.getElementById('btnSubmit').disabled = disabled;
-            const icon = document.getElementById('btnAnalyze').querySelector('i');
-            if (disabled) {
-                if (icon) icon.className = "fa-solid fa-circle-notch animate-spin text-indigo-400";
-            } else {
-                if (icon) icon.className = "fa-solid fa-wand-magic-sparkles text-indigo-400 group-hover:rotate-12 transition-transform";
-            }
-        }
-    </script>
+    <!-- スクリプト分離リンク -->
+    <script src="app.js"></script>
 </body>
 </html>
