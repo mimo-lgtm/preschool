@@ -3,142 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>未来を育む教育特区・市民提案広場</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome (アイコン用：以前使われていた場合はそのまま有効になります) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/releases/v5.15.4/css/all.min.css">
+    <title>幼児教育・子育て支援 市民意見オープンデータプラットフォーム</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Helvetica Neue', Arial, sans-serif; }
-        .hero-section { background: linear-gradient(135deg, #e3f2fd 0%, #f1f8ff 100%); border-bottom: 1px solid #dee2e6; }
-        .perspective-box { background-color: #f8f9fa; border-left: 4px solid #198754; padding: 10px 15px; margin-bottom: 10px; border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
-        .clickable-header { cursor: pointer; transition: background-color 0.2s ease; }
-        .clickable-header:hover { background-color: #f1f8ff !important; }
-        .card { border-radius: 8px; }
-        .badge { font-size: 0.85em; padding: 0.4em 0.6em; }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .tab-active { border-bottom: 2px solid #4f46e5; color: #4f46e5; font-weight: 600; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 min-h-screen text-slate-800">
 
-    <!-- 🌐 ヘッダーエリア -->
-    <div class="hero-section py-4 mb-4">
-        <div class="container">
-            <div class="d-flex align-items-center justify-content-between">
+    <!-- ヘッダー -->
+    <header class="gradient-bg text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <i class="fa-solid fa-child-gradient text-2xl text-yellow-300"></i>
+                </div>
                 <div>
-                    <h1 class="fw-bold text-dark mb-2">✨ 教育特区・市民提案広場</h1>
-                    <p class="text-secondary mb-0">市民の皆さんのアイデアをAIが整理し、未来の教育特区構想へ繋げます。</p>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">幼児教育・子育て支援</h1>
+                    <p class="text-xs text-indigo-100 mt-0.5">市民意見オープンデータプラットフォーム (Vox Populi AI)</p>
                 </div>
             </div>
+            <div class="flex items-center gap-4 text-sm bg-black/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 本日の提案: <strong id="todayCount" class="text-yellow-300">0</strong> 件</span>
+                <span class="text-indigo-200">|</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-database text-indigo-300"></i> 蓄積: <strong id="totalCount" class="text-yellow-300">0</strong> 件</span>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <!-- 🏛️ メインコンテンツエリア -->
-    <div class="container mb-5">
-        <div class="row g-4">
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- 👈 左側列：ご意見投稿 ＆ AI壁打ちフィードバック -->
-            <div class="col-lg-5">
-                
-                <!-- 1. 入力カード -->
-                <div class="card shadow-sm p-4 mb-4 bg-white border-0">
-                    <h5 class="fw-bold mb-3 text-dark d-flex align-items-center">
-                        <span class="me-2">✍️</span>あなたの意見を届ける
-                    </h5>
-                    <div class="mb-3">
-                        <label for="content" class="form-label small text-muted">教育や子育てに関するアイデアや想いを自由に入力してください</label>
-                        <textarea id="content" class="form-control" rows="7" placeholder="（例）幼稚園と保育園の垣根をなくし、どの施設でも質の高い幼児教育がシームレスに受けられる仕組みを作ってほしい..."></textarea>
+            <!-- 左側：入力＆AIフィードバックパネル (5列) -->
+            <section class="lg:col-span-5 space-y-6">
+                <!-- 投稿カード -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <div class="flex items-center gap-2.5 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </div>
+                        <h2 class="text-lg font-bold text-slate-900">あなたの意見を届ける</h2>
                     </div>
-                    <button id="btnAiAnalysis" class="btn btn-primary w-100 fw-bold py-2.5 shadow-sm">
-                        ✨ 1. 意見を送信してAIと壁打ちする
-                    </button>
-                </div>
-
-                <!-- 2. AIからの提案・整理結果（スクリーンショットのUIを100%完全再現） -->
-                <div class="card shadow-sm p-4 bg-white border-0 d-none" id="aiAssistBox">
-                    <h5 class="fw-bold text-success mb-4 d-flex align-items-center">
-                        <span class="me-2">🤖</span>AIからの提案・整理結果
-                    </h5>
+                    <p class="text-sm text-slate-500 mb-4 leading-relaxed">
+                        箇条書き、メモ書き、愚痴のような形でも構いません。AIが自動で論理を整理し、適切な大中小分類にマッピングしてデータベース（Spreadsheet）へ安全に格納します。
+                    </p>
                     
-                    <!-- 推奨タイトル -->
-                    <div class="mb-4 pb-2 border-bottom">
-                        <span class="badge bg-primary mb-2">AI推奨タイトル</span>
-                        <h5 id="aiTitleText" class="fw-bold text-dark mb-1">--</h5>
-                    </div>
-
-                    <!-- 論点・概要 -->
-                    <div class="mb-4 pb-2 border-bottom">
-                        <span class="badge bg-secondary mb-2">意見の論点・概要</span>
-                        <p id="aiSummaryText" class="text-muted small lh-base mb-1">--</p>
-                    </div>
-
-                    <!-- 5つの視点 -->
-                    <div class="mb-4 pb-2 border-bottom">
-                        <span class="badge bg-success mb-3">💡 5つの視点による深掘り</span>
-                        <div id="aiPerspectivesText" class="small text-dark">
-                            <!-- JavaScriptからここにa〜eの枠が綺麗に挿入されます -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="opinionInput" class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">ご意見・アイデア（自由記述）</label>
+                            <textarea id="opinionInput" rows="6" class="w-full rounded-xl border border-slate-200 p-3.5 text-sm shadow-inner focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all resize-none placeholder-slate-400" placeholder="（例）保育園の送り迎えの時間が厳しくて、仕事との両立が本当に大変。せめてあと30分でも延長保育の申請がスマホから簡単にできるようになれば助かるのですが…。あと、地域で子供を預かり合う仕組みももっとオープンに広がってほしい。"></textarea>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button id="btnAnalyze" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-medium text-sm py-3 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 group disabled:opacity-50 disabled:pointer-events-none">
+                                <i class="fa-solid fa-wand-magic-sparkles text-indigo-400 group-hover:rotate-12 transition-transform"></i>
+                                <span>AIに確認（壁打ち）</span>
+                            </button>
+                            <button id="btnSubmit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-indigo-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>最終送信</span>
+                            </button>
                         </div>
                     </div>
-
-                    <!-- 配置・統合判定 -->
-                    <div class="mb-4 pb-2 border-bottom">
-                        <span class="badge bg-warning text-dark mb-2">🔗 配置・統合判定</span>
-                        <div id="aiMergeReasonText" class="text-muted small lh-base mb-1">--</div>
-                    </div>
-
-                    <!-- 200字要約 -->
-                    <div class="mb-4">
-                        <span class="badge bg-dark mb-2">📝 提案箱用 200字要約</span>
-                        <p id="aiRefinedText" class="text-dark small lh-base mb-0" style="background-color: #f1f3f5; padding: 12px; border-radius: 6px; border-left: 3px solid #212529;">--</p>
-                    </div>
-
-                    <!-- 投稿ボタン -->
-                    <button id="btnSubmitToBox" class="btn btn-success w-100 fw-bold py-2.5 shadow-sm mt-3">
-                        📥 2. この内容で提案箱へ投稿する
-                    </button>
-                </div>
-            </div>
-
-            <!-- 👉 右側列：みんなのアイデアの地図（アコーディオン） ＆ 届いた提案箱一覧 -->
-            <div class="col-lg-7">
-                
-                <!-- アイデアの地図（アコーディオンが展開するエリア） -->
-                <div class="card shadow-sm p-4 mb-4 bg-white border-0">
-                    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center">
-                        <span class="me-2">🗺️</span>みんなのアイデアの地図
-                    </h5>
-                    <p class="text-muted small mb-3">5つの基本方針をクリックすると、市民から寄せられた各テーマの提案が確認できます。</p>
-                    
-                    <div id="matrixContainer">
-                        <!-- ここに以前の「5つの基本方針」アコーディオンが自動出力されます -->
-                    </div>
                 </div>
 
-                <!-- 届いた提案箱（新着一覧エリア） -->
-                <div class="card shadow-sm p-4 bg-white border-0">
-                    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center">
-                        <span class="me-2">📥</span>届いた提案箱（一覧）
-                    </h5>
-                    <p class="text-muted small mb-3">リアルタイムで集約された市民の意見一覧です。</p>
-                    
-                    <div id="listContainer" style="max-height: 500px; overflow-y: auto;">
-                        <!-- ここに新着リストが出力されます -->
+                <!-- AI構造化プレビューパネル（初期非表示） -->
+                <div id="resultBox" class="bg-gradient-to-b from-indigo-900 to-slate-900 text-white rounded-2xl shadow-xl border border-slate-800 p-6 space-y-5 hidden animate-fade-in">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-yellow-400">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm">🤖 AI構造化マッピング案</h3>
+                                <p class="text-[10px] text-slate-400">データ解析エンジン Llama-3.1 が生成</p>
+                            </div>
+                        </div>
+                        <span class="text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md font-medium">解析成功</span>
+                    </div>
+
+                    <div class="space-y-4 text-sm">
+                        <div>
+                            <span class="block text-[11px] font-medium text-slate-400 mb-1">💡 生成されたタイトル案</span>
+                            <div id="resTitle" class="text-base font-bold text-yellow-300 tracking-wide bg-white/5 p-2.5 rounded-lg border border-white/5"></div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <span class="block text-[11px] font-medium text-slate-400 mb-1">📂 大分類</span>
+                                <div id="resCategory" class="bg-white/5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-indigo-200 border border-white/5 text-center truncate"></div>
+                            </div>
+                            <div>
+                                <span class="block text-[11px] font-medium text-slate-400 mb-1">🌿 中分類</span>
+                                <div id="resMidCat" class="bg-white/5 px-2.5 py-1.5 rounded-lg text-xs text-slate-200 border border-white/5 text-center truncate"></div>
+                            </div>
+                            <div>
+                                <span class="block text-[11px] font-medium text-slate-400 mb-1">🏷️ 小分類</span>
+                                <div id="resSubCat" class="bg-white/5 px-2.5 py-1.5 rounded-lg text-xs text-slate-200 border border-white/5 text-center truncate"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="block text-[11px] font-medium text-slate-400 mb-1">📝 200字要約</span>
+                            <div id="resSummary" class="text-xs text-slate-300 bg-white/5 p-3 rounded-lg leading-relaxed border border-white/5 whitespace-pre-wrap"></div>
+                        </div>
                     </div>
                 </div>
-                
-            </div>
+            </section>
+
+            <!-- 右側：ダッシュボード＆タイムライン (7列) -->
+            <section class="lg:col-span-7 space-y-6">
+                <!-- タブセクション＆フィルター -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="flex gap-6 border-b border-slate-100 w-full sm:w-auto">
+                        <button id="tabTimeline" class="pb-3 text-sm font-medium tab-active transition-all flex items-center gap-2"><i class="fa-solid fa-list-ul"></i> 市民の意見一覧</button>
+                    </div>
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="searchInput" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-xs focus:outline-none focus:border-indigo-500 focus:bg-white transition-all" placeholder="キーワードで絞り込み...">
+                    </div>
+                </div>
+
+                <!-- タイムライン表示エリア -->
+                <div id="opinionsList" class="space-y-4 max-h-[750px] overflow-y-auto pr-2 hide-scrollbar">
+                    <!-- ローディング表示 -->
+                    <div class="text-center py-12 text-slate-400 space-y-3">
+                        <i class="fa-solid fa-circle-notch animate-spin text-3xl text-indigo-500"></i>
+                        <p class="text-xs">Spreadsheetからリアルタイムデータをロード中...</p>
+                    </div>
+                </div>
+            </section>
+
         </div>
-    </div>
+    </main>
 
-    <!-- 👣 フッター -->
-    <footer class="bg-white border-top py-3 text-center text-muted small mt-auto">
-        <div class="container">
-            &copy; 2026 教育特区推進市民会議 &middot; AI市民対話プラットフォームシステム
+    <!-- フッター -->
+    <footer class="bg-white border-t border-slate-200 mt-20 py-6 text-center text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto px-4">
+            &copy; 2026 幼児教育・子育て支援 市民意見オープンデータプラットフォーム ALL RIGHTS RESERVED.
         </div>
     </footer>
 
-    <!-- Bootstrap 5 Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bundle.min.js"></script>
-    <!-- 連携スクリプト -->
-    <script src="app.js"></script>
+    <!-- スクリプト領域 -->
+    <script>
+        // ====================================================================
+        // ⚠️ 【重要・設定】ここにあなたのGASウェブアプリURLを貼り付けてください
+        // ====================================================================
+        const GAS_URL = "https://script.google.com/macros/s/XXXXX/exec"; 
+
+        let allOpinions = [];
+
+        // バックアップ・初期表示用の15件の模擬データ (MOCK_OPINIONS)
+        const MOCK_OPINIONS = [
+            { id: 1, timestamp: "2026-06-15T10:23:00.000Z", category: "シームレス成長支援", title: "幼保小連携の強化", summary: "幼稚園から小学校への移行期における環境変化のストレスを低減するため、合同研修や相互の授業見学を定期化するべきです。", content: "子供が小学校に上がった時のギャップ（小1の壁）が心配です。幼稚園と小学校で情報共有や交流をもっとスムーズにしてほしいです。", smallCat: "小1の壁", midCat: "幼保小連携", status: "表示" },
+            { id: 2, timestamp: "2026-06-15T08:12:00.000Z", category: "主体的な学び", title: "屋外遊具のデジタル化", summary: "従来の公園遊具にQRコードなどを設置し、デジタルスタンプラリーや遊び方の解説動画が見られる仕組みを試験導入する提案。", content: "公園の遊具に飽き気味の子供のために、スマホと連動した宝探しゲームができるようなデジタル要素を少し取り入れてほしい。", smallCat: "屋外遊具", midCat: "遊び場確保", status: "表示" },
+            { id: 3, timestamp: "2026-06-14T15:45:00.000Z", category: "楽しさと好奇心", title: "自然体験スペース", summary: "都市部の子どもたちが土や虫、植物と日常的に触れ合えるミニビオトープや泥遊び専用エリアを公営公園内に新設する。", content: "もっと泥遊びや虫捕りが自由にできる自然豊かな場所が街中に欲しい。綺麗すぎる公園ばかりで子供が物足りなそうにしている。", smallCat: "自然体験", midCat: "環境整備", status: "表示" },
+            { id: 4, timestamp: "2026-06-14T02:30:00.000Z", category: "個性・才能の開花", title: "特異才能の早期発見", summary: "特定の分野（算数、アート、音楽など）で突出した才能を示す幼児に対し、専門家が個別にカリキュラムを提供する相談窓口の設置。", content: "うちの子は特定のパズルだけ異常に得意なのですが、ギフテッド教育のような、個性を伸ばせる場所が地域にあれば知りたい。", smallCat: "ギフテッド", midCat: "個別最適化", status: "表示" },
+            { id: 5, timestamp: "2026-06-13T11:20:00.000Z", category: "未来を生き抜く力", title: "幼児ITリテラシー", summary: "5歳児クラスから、タブレットを用いた創作活動や視覚的なプログラミング体験を週に1回程度導入し、ITに親しむ土壌を作る。", content: "小さいうちからスマホやタブレットを触らせることに不安もあるが、どうせなら正しくクリエイティブに使う方法を教えてほしい。", smallCat: "デジタル化", midCat: "情報教育", status: "表示" },
+            { id: 6, timestamp: "2026-06-12T07:05:00.000Z", category: "シームレス成長支援", title: "24時間相談窓口", summary: "深夜の夜泣きや突発的な育児不安に寄り添うため、AIチャットボットと専門助産師が連携した24時間体制のLINE相談を強化する。", content: "夜中に子どもが泣き止まない時、孤独でネットの不確かな情報に振り回されて不安になります。信頼できる24時間窓口が欲しい。", smallCat: "メンタルケア", midCat: "育児相談", status: "表示" },
+            { id: 7, timestamp: "2026-06-11T18:14:00.000Z", category: "主体的な学び", title: "移動式図書館の充実", summary: "絵本や児童書を専門に乗せた移動図書館車を、保育園の降園時間に合わせて各地域の公園や広場に巡回させるプロジェクト。", content: "図書館が遠いので、保育園の帰りに絵本を気軽に借りられる移動図書館のような車が、週に数回でも回ってきてくれたら嬉しい。", smallCat: "絵本巡回", midCat: "地域読書推進", status: "表示" },
+            { id: 8, timestamp: "2026-06-11T04:50:00.000Z", category: "楽しさと好奇心", title: "プロ演奏家と遊ぶ会", summary: "地域の公民館で、乳幼児が床に寝転びながら本物のオーケストラ楽器の響きを間近で体感できる、五感を刺激する音遊びフェス。", content: "赤ちゃん連れだと普通のコンサートに行けないので、騒いでも泣いてもお互い様な、生演奏を体感できるイベントを増やして。", smallCat: "音感育成", midCat: "文化芸術触発", status: "表示" },
+            { id: 9, timestamp: "2026-06-10T13:22:00.000Z", category: "個性・才能の開花", title: "多文化共生キッズラボ", summary: "外国籍のルーツを持つ子どもたちと、地域の幼児が言葉の壁を超えてデザインやボディーランゲージで協働する国際交流ワークショップ。", content: "地域に外国人のファミリーが増えたので、子どもたちが小さいうちから自然に多文化に触れ合えるコミュニティを作ってほしい。", smallCat: "多文化共生", midCat: "グローバル推進", status: "表示" },
+            { id: 10, timestamp: "2026-06-09T09:11:00.000Z", category: "未来を生き抜く力", title: "幼児向け金銭教育", summary: "お買い物ごっこを通じて「お金の大切さ」や「物との交換」を体験的に学ぶ、4〜5歳児向けのオリジナル金融教育プログラムの展開。", content: "キャッシュレス決済ばかり見せているので、子どもがお金の価値を理解できているか不安。簡単な金銭感覚を養う講座が欲しい。", smallCat: "マネーリテラシー", midCat: "キャリア教育", status: "表示" },
+            { id: 11, timestamp: "2026-06-08T16:40:00.000Z", category: "その他", title: "病児保育の予約改善", summary: "当日朝の急な発熱時でも、地域の提携病児保育室の空き状況をリアルタイムに一元確認でき、ワンタップで予約が確定するシステム。", content: "子供が急に熱を出した時、病児保育の電話がどこも繋がらず絶望します。空き状況の確認と予約を即座にネットで完結させて。", smallCat: "病児保育", midCat: "インフラ改善", status: "表示" },
+            { id: 12, timestamp: "2026-06-07T12:01:00.000Z", category: "シームレス成長支援", title: "父親の育児サークル", summary: "パパたちが気軽に集まり、育児の悩み共有やDIY玩具づくりを行う、土曜日開催のコミュニティスペースの運営支援。", content: "母親向けのサークルは多いが、父親が孤立しがち。土日にパパと子どもが一緒に参加して友達を作れるイベントがもっと必要。", smallCat: "父親支援", midCat: "パパサークル", status: "表示" },
+            { id: 13, timestamp: "2026-06-06T03:15:00.000Z", category: "主体的な学び", title: "廃材アートスタジオ", summary: "地域の工場から出る端材や段ボールを安全に加工し、子どもたちが巨大なオブジェや秘密基地を自由に工作できる常設スタジオの設置。", content: "家だと汚れたり場所をとるような、ダイナミックな工作や絵の具遊びを、思いっきりさせてあげられる工作特化の施設がほしい。", smallCat: "造形あそび", midCat: "アート教育", status: "表示" },
+            { id: 14, timestamp: "2026-06-05T10:33:00.000Z", category: "楽しさと好奇心", title: "商店街で職業プチ体験", summary: "地元の商店街と連携し、3〜5歳児がお花屋さんやパン屋さんのお手伝いをプチ体験し、地域住民とふれあうスタンプイベント。", content: "キッザニアはまだ早い年齢の子でも、地元のお店の人と挨拶したり、ちょっとだけお手伝いができるような温かい企画をしてほしい。", smallCat: "地域交流", midCat: "職業体験", status: "表示" },
+            { id: 15, timestamp: "2026-06-04T14:19:00.000Z", category: "未来を生き抜く力", title: "防災キッズキャンプ", summary: "幼児と保護者が一緒に、テント設営やポリ袋を使った調理、暗闇体験などを通じて楽しく実践的な生存スキルを学ぶ防災教室。", content: "大災害が起きた時、幼児連れでどう生き延びるか不安。子どもが怖がらずに、遊び感覚で防災を学べるキャンプがあったらいいな。", smallCat: "防災教育", midCat: "安全対策", status: "表示"
+        ];
+
+        // ページロード時の初期設定
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchOpinions();
+
+            // イベントリスナー登録
+            document.getElementById('btnAnalyze').addEventListener('click', handleAnalyze);
+            document.getElementById('btnSubmit').addEventListener('click', handleSubmit);
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+        });
+
+        // ==========================================
+        // 🔄 1. データ取得フェーズ（タイポ修正適用済）
+        // ==========================================
+        async function fetchOpinions() {
+            const listEl = document.getElementById('opinionsList');
+            try {
+                const res = await fetch(GAS_URL);
+                let data = await res.json();
+                
+                // コロンからドット（Array.isArray）へ、タイポのない完全な構文で動作
+                if (!Array.isArray(data) || data.length === 0) {
+                    console.warn('GASから有効な配列が取得できませんでした。模擬データを使用します。');
+                    allOpinions = [...MOCK_OPINIONS];
+                } else {
+                    allOpinions = data;
+                }
+            } catch (err) {
+                console.error('GAS通信失敗。バックアップ用の模擬データを出力します。', err);
+                allOpinions = [...MOCK_OPINIONS];
+            }
+            
+            renderOpinions(allOpinions);
+            updateDashboardCounters();
+        }
+
+        // ==========================================
+        // 🧠 2. AI壁打ちアクション（POST）
+        // ==========================================
+        async function handleAnalyze() {
+            const content = document.getElementById('opinionInput').value.trim();
+            if (!content) return alert('ご意見・アイデアを入力してください。');
+
+            toggleButtons(true);
+            const resultBox = document.getElementById('resultBox');
+            
+            try {
+                const res = await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'analyze', content: content })
+                });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    // AI構造化結果の表示
+                    document.getElementById('resTitle').textContent = data.result.推奨タイトル || '無題の提案';
+                    document.getElementById('resCategory').textContent = data.result.大分類 || 'その他';
+                    document.getElementById('resMidCat').textContent = data.result.中分類 || '未設定';
+                    document.getElementById('resSubCat').textContent = data.result.小分類 || '未設定';
+                    document.getElementById('resSummary').textContent = data.result.要約200 || content;
+                    
+                    resultBox.classList.remove('hidden');
+                } else {
+                    alert('分析エラー: ' + data.message);
+                }
+            } catch (err) {
+                alert('GASとの通信に失敗しました。URLまたはデプロイ設定をご確認ください。');
+                console.error(err);
+            } finally {
+                toggleButtons(false);
+            }
+        }
+
+        // ==========================================
+        // 🚀 3. 最終送信アクション（POST）
+        // ==========================================
+        async function handleSubmit() {
+            const content = document.getElementById('opinionInput').value.trim();
+            if (!content) return alert('ご意見・アイデアを入力してください。');
+
+            toggleButtons(true);
+
+            // 表示されているAI結果を回収、無ければ空文字を送りGAS側で再作成
+            const isAnalyzed = !document.getElementById('resultBox').classList.contains('hidden');
+            const payload = {
+                action: 'submit',
+                content: content,
+                title: isAnalyzed ? document.getElementById('resTitle').textContent : '',
+                category: isAnalyzed ? document.getElementById('resCategory').textContent : '',
+                midCat: isAnalyzed ? document.getElementById('resMidCat').textContent : '',
+                subCat: isAnalyzed ? document.getElementById('resSubCat').textContent : '',
+                summary: isAnalyzed ? document.getElementById('resSummary').textContent : ''
+            };
+
+            try {
+                const res = await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    alert('ご意見がデータベース（Spreadsheet）へ正常に格納されました。ご協力ありがとうございました！');
+                    document.getElementById('opinionInput').value = '';
+                    document.getElementById('resultBox').classList.add('hidden');
+                    fetchOpinions(); // リストのリフレッシュ
+                } else {
+                    alert('送信エラー: ' + data.message);
+                }
+            } catch (err) {
+                alert('通信に失敗しました。送信状態をご確認ください。');
+                console.error(err);
+            } finally {
+                toggleButtons(false);
+            }
+        }
+
+        // ==========================================
+        // 📋 4. レンダー & フィルター周り
+        // ==========================================
+        function renderOpinions(list) {
+            const listEl = document.getElementById('opinionsList');
+            listEl.innerHTML = '';
+
+            if (list.length === 0) {
+                listEl.innerHTML = `
+                    <div class="bg-white rounded-2xl p-8 text-center text-slate-400 border border-slate-200/60">
+                        <i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>
+                        該当する意見が見つかりませんでした。
+                    </div>`;
+                return;
+            }
+
+            list.forEach(op => {
+                const dateStr = op.timestamp ? new Date(op.timestamp).toLocaleString('ja-JP') : '日付不明';
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all space-y-3";
+                card.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 font-semibold rounded-md">${op.category || 'その他'}</span>
+                            ${op.midCat ? `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md">${op.midCat}</span>` : ''}
+                            ${op.smallCat ? `<span class="text-slate-400 font-medium">#${op.smallCat}</span>` : ''}
+                        </div>
+                        <span class="text-slate-400 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${dateStr}</span>
+                    </div>
+                    <h4 class="font-bold text-slate-900 text-base tracking-tight">${op.title || '無題の提案'}</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-100">${op.summary || op.content}</p>
+                    <div class="text-[11px] text-slate-400 flex items-center gap-1 pt-1 border-t border-slate-50">
+                        <i class="fa-solid fa-user-bubble text-slate-300"></i> 元の投稿文: <span class="truncate max-w-md inline-block align-bottom">${op.content}</span>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        function handleSearch(e) {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) {
+                renderOpinions(allOpinions);
+                return;
+            }
+            const filtered = allOpinions.filter(op => 
+                (op.title && op.title.toLowerCase().includes(query)) ||
+                (op.content && op.content.toLowerCase().includes(query)) ||
+                (op.summary && op.summary.toLowerCase().includes(query)) ||
+                (op.category && op.category.toLowerCase().includes(query)) ||
+                (op.midCat && op.midCat.toLowerCase().includes(query)) ||
+                (op.smallCat && op.smallCat.toLowerCase().includes(query))
+            );
+            renderOpinions(filtered);
+        }
+
+        function updateDashboardCounters() {
+            document.getElementById('totalCount').textContent = allOpinions.length;
+            
+            // 本日の投稿数を簡易カウント
+            const todayStr = new Date().toDateString();
+            const todayCount = allOpinions.filter(op => op.timestamp && new Date(op.timestamp).toDateString() === todayStr).length;
+            document.getElementById('todayCount').textContent = todayCount;
+        }
+
+        function toggleButtons(disabled) {
+            document.getElementById('btnAnalyze').disabled = disabled;
+            document.getElementById('btnSubmit').disabled = disabled;
+            const icon = document.getElementById('btnAnalyze').querySelector('i');
+            if (disabled) {
+                if (icon) icon.className = "fa-solid fa-circle-notch animate-spin text-indigo-400";
+            } else {
+                if (icon) icon.className = "fa-solid fa-wand-magic-sparkles text-indigo-400 group-hover:rotate-12 transition-transform";
+            }
+        }
+    </script>
 </body>
 </html>
