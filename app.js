@@ -1,7 +1,6 @@
 // ==========================================
 // 🌐 設定エリア（GASのWebアプリURL）
 // ==========================================
-// 🔴 デプロイした最新のGAS WebアプリURLをここに貼り付けてください
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzS2Bq8kgPcefvyQKB4B5cLN7Shm1mUbrS25cvGhtJgiCMKTmbMPz-4wd1y_7EjrzA/exec";
 
 // 5つの一貫した大分類（カテゴリ）
@@ -13,6 +12,15 @@ const MAIN_CATEGORIES = [
     "未来を生き抜く力"
 ];
 
+// 📌 【修正】中分類が増えすぎないよう、固定のマスターとして定義
+const FIXED_MID_CATEGORIES = {
+    "シームレス成長支援": ["保幼小の連携強化", "切れ目のない相談窓口", "育児休業からの復職支援", "その他"],
+    "主体的な学び": ["子ども主導のプロジェクト学習", "選択制のアクティビティ", "デジタルを活用した自己表現", "その他"],
+    "楽しさと好奇心": ["五感を使う自然体験", "失敗を歓迎する科学遊び", "地域のアート・文化資源の活用", "その他"],
+    "個性・才能の開花": ["個別最適化された学習プラン", "多様な才能を認める評価基準", "特別なニーズを持つ子への支援", "その他"],
+    "未来を生き抜く力": ["非認知能力の育成", "多様な人々と協働する体験", "答えのない問いに挑む力", "その他"]
+};
+
 // グローバル変数
 let allOpinions = [];
 let currentAiResult = null;
@@ -21,14 +29,11 @@ let currentAiResult = null;
 // 🎬 画面が読み込まれた時のメイン処理
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-    // 0. 「5つの基本方針」エリアの構造維持
     renderFivePillars();
 
-    // ボタン要素の取得
     const btnAiAnalysis = document.getElementById("btnAiAnalysis"); 
     const btnSubmitToBox = document.getElementById("btnSubmitToBox");
 
-    // 表示パーツの取得
     const aiPlaceholder = document.getElementById("aiPlaceholder");
     const aiAssistBox = document.getElementById("aiAssistBox");
     
@@ -45,10 +50,8 @@ document.addEventListener("DOMContentLoaded", function () {
         btnAiAnalysis.addEventListener("click", async function () {
             console.log("🚀 AI壁打ちボタンがクリックされました");
             
-            // HTMLの textarea id="content" から取得
             const txtContent = document.getElementById("content");
             const contentValue = txtContent ? txtContent.value.trim() : "";
-            console.log("📝 読み取った入力内容:", contentValue);
 
             if (!contentValue) {
                 alert("あなたの想いやアイデアを自由に入力してください。");
@@ -72,35 +75,64 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.status === "success") {
                     currentAiResult = data.result;
 
-                    // --- 📥 GAS(JSON)の日本語キー名と100%正確にマッピング ---
-                    const bigCat = currentAiResult["大分類"] || "その他";
-                    const midCat = currentAiResult["中分類"] || "一般テーマ";
-                    const smallCat = currentAiResult["小分類"] || "未分類";
-                    const recTitle = currentAiResult["推奨タイトル"] || "無題の提案";
-                    const summary200 = currentAiResult["要約200"] || "要約の生成に失敗しました。";
-
-                    // ① 意見の論点・概要（大分類・中分類をここにわかりやすく明記）
-                    if (aiSummaryText) {
-                        aiSummaryText.innerHTML = `<strong>【自動分類】</strong> ${bigCat} ＞ ${midCat}<br><strong>【キーワード】</strong> ${smallCat}<br><br>※AIが元の文章から文脈を読み解き、上記の幼児教育方針セクションへ自動的に仕分けを行いました。`;
+                    // GASから返ってきた大分類を取得（想定外のものは「その他」へ）
+                    let bigCat = currentAiResult["大分類"] || "その他";
+                    if (!MAIN_CATEGORIES.includes(bigCat)) {
+                        bigCat = "その他";
                     }
 
-                    // ② 5つの視点による深掘り / 補足
+                    // 📌 【修正】中分類を固定リストから安全に決定するロジック
+                    let midCat = currentAiResult["中分類"] || "その他";
+                    const allowedMids = FIXED_MID_CATEGORIES[bigCat] || ["その他"];
+                    // AIが返してきた中分類が含まれていなければ、一番近いものか「その他」に固定
+                    if (!allowedMids.includes(midCat)) {
+                        const matched = allowedMids.find(m => midCat.includes(m) || m.includes(midCat));
+                        midCat = matched || "その他";
+                    }
+
+                    // 確定した固定分類を保存用に上書き
+                    currentAiResult["大分類"] = bigCat;
+                    currentAiResult["中分類"] = midCat;
+
+                    // ① [上部] 分類の表示
+                    if (aiSummaryText) {
+                        aiSummaryText.innerHTML = `<strong>【自動分類】</strong> ${bigCat} ＞ ${midCat}<br><br>※AIが固定定義された5つの基本方針に基づき、最適なカテゴリへ自動仕分けを行いました。`;
+                    }
+
+                    // 🧠 【修正】ご指定の5つの観点 (a〜e) に基づく詳細分析を組み立てて表示
                     if (aiPerspectivesText) {
-                        aiPerspectivesText.textContent = `元の意見をもとに、AIが論理構造を整理しました。上の「推奨タイトル」および下の「200字要約」の内容を確認し、よろしければ「提案箱に投稿する」ボタンを押してください。このまま大分類『${bigCat}』のデータベースへ格納されます。`;
+                        // GASのcallGroqForStructureから返ってくる各データを安全にフォールバックしながらマッピング
+                        const coreText = currentAiResult["核心"] || currentAiResult["概要"] || "（意見から抽出中）";
+                        const impactText = currentAiResult["変化"] || "市民生活の利便性向上、および子どもたちの主体的環境の実現。";
+                        const exampleText = currentAiResult["成功事例"] || "国内自治体での先行特区導入事例など。";
+                        const concernText = currentAiResult["懸念点"] || "現場のオペレーション負担。ガイドライン策定による解決。";
+                        const questionText = currentAiResult["問い"] || "この取り組みを地域全体へ普及させるには？";
+
+                        aiPerspectivesText.innerHTML = `
+<div class="mb-2"><strong>a. この意見の核心（本当の願い・課題）</strong><br>${coreText}</div>
+<div class="mb-2"><strong>b. 実現した場合の市民生活への変化</strong><br>${impactText}</div>
+<div class="mb-2"><strong>c. 成功事例（国内外）</strong><br>${exampleText}</div>
+<div class="mb-2"><strong>d. 懸念点と乗り越え方</strong><br>${concernText}</div>
+<div><strong>e. さらに発展させるための問い</strong><br>${questionText}</div>
+                        `.trim();
                     }
 
                     // ③ 推奨タイトル
                     if (aiTitleText) {
-                        aiTitleText.textContent = recTitle;
+                        aiTitleText.textContent = currentAiResult["推奨タイトル"] || "無題の提案";
                     }
 
                     // ④ 200字要約
                     if (aiRefinedText) {
-                        aiRefinedText.textContent = summary200;
+                        aiRefinedText.textContent = currentAiResult["要約200"] || "要約の生成に失敗しました。";
                     }
 
-                    // 画面の表示切り替え（プレースホルダーを隠して結果ボックスをFlex表示）
-                    if (aiPlaceholder) aiPlaceholder.classList.add("d-none");
+                    // 📌 【修正】下部にある「必要のない初期メッセージボックス」を完全に非表示にする
+                    if (aiPlaceholder) {
+                        aiPlaceholder.style.setProperty("display", "none", "important");
+                        aiPlaceholder.classList.add("d-none");
+                    }
+                    // 代わりに結果用コンポーネントを綺麗に表示
                     if (aiAssistBox) {
                         aiAssistBox.style.setProperty("display", "flex", "important");
                         aiAssistBox.classList.remove("d-none");
@@ -110,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } catch (err) {
                 console.error("🚨 エラー詳細:", err);
-                alert("通信エラーが発生しました。GASが正しく「ウェブアプリ」としてデプロイされているか、URLが合っているか確認してください。");
+                alert("通信エラーが発生しました。");
             } finally {
                 btnAiAnalysis.disabled = false;
                 btnAiAnalysis.innerHTML = `✨ 1. 意見を送信してAIと壁打ちする`;
@@ -123,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
         btnSubmitToBox.addEventListener("click", async function () {
             if (!currentAiResult) return;
 
-            const confirmPost = confirm("AIが整理・肉付けしたこの内容で、正式に提案箱へ投稿しますか？");
+            const confirmPost = confirm("AIが整理・固定分類したこの内容で、正式に提案箱へ投稿しますか？");
             if (!confirmPost) return;
 
             const txtContent = document.getElementById("content");
@@ -133,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
             btnSubmitToBox.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> 提案箱へ投稿中...`;
 
             try {
-                // GASの「action === 'submit'」が受け取るパラメータ名に完全に一致させます
+                // 📌 【修正】GASの doPost (action === 'submit') へキー名を完全に合わせて送信
                 const res = await fetch(GAS_URL, {
                     method: "POST",
                     headers: { "Content-Type": "text/plain" },
@@ -142,25 +174,29 @@ document.addEventListener("DOMContentLoaded", function () {
                         content: rawText,
                         title: currentAiResult["推奨タイトル"],
                         summary: currentAiResult["要約200"],
-                        category: currentAiResult["大分類"],
-                        midCat: currentAiResult["中分類"],
-                        subCat: currentAiResult["小分類"]
+                        category: currentAiResult["大分類"],  // B列にマッピング
+                        midCat: currentAiResult["中分類"]     // G列にマッピング
                     })
                 });
                 const data = await res.json();
 
                 if (data.status === "success") {
-                    alert(`提案箱への投稿が正常に完了しました！\n分野【${data.result["大分類"] || "分類中"}】へ格納されました。`);
+                    alert(`提案箱への投稿が正常に完了しました！\n固定分野【${currentAiResult["大分類"]} ＞ ${currentAiResult["中分類"]}】へ格納されました。`);
                     
                     if (txtContent) txtContent.value = "";
-                    if (aiPlaceholder) aiPlaceholder.classList.remove("d-none");
+                    
+                    // 初期表示状態に戻す（結果を隠し、プレースホルダーを表示）
                     if (aiAssistBox) aiAssistBox.classList.add("d-none");
+                    if (aiPlaceholder) {
+                        aiPlaceholder.style.removeProperty("display");
+                        aiPlaceholder.classList.remove("d-none");
+                    }
                     currentAiResult = null;
 
-                    // リストを最新状態に再更新
-                    fetchOpinions();
+                    // 📌 提案箱（スプレッドシート）の最新一覧データを再取得して再描画
+                    await fetchOpinions();
                     
-                    // 投稿完了後、自動的に「アイデアの地図」タブを開く
+                    // 投稿完了後、自動的に「アイデアの地図」タブに切り替える
                     const mapTabBtn = document.getElementById("map-tab");
                     if (mapTabBtn) mapTabBtn.click();
                 } else {
@@ -176,9 +212,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// ==========================================
-// 🏛️ 「5つの柱」表示パーツの構造維持
-// ==========================================
 function renderFivePillars() {
     console.log("🌱 5つの基本方針セクションを確認しました。");
 }
@@ -198,8 +231,8 @@ const MOCK_OPINIONS = [
     { 大分類: "楽しさと好奇心", 中分類: "地域のアート・文化資源の活用", 推奨タイトル: "プロと響き合う体験で既成概念を打ち破る地域協働アートプログラム", summary: "地元の美術館や劇場、アーティストと連携し、本物の芸術や文化に幼少期から日常的に触れられる機会を創出してください。プロの作品を鑑賞するだけでなく、音楽家と一緒に音を鳴らしたり、画家と巨大なキャンバスに絵を描いたりする協働型ワークショップが理想です。" },
     { 大分類: "個性・才能の開花", 中分類: "個別最適化された学習プラン", 推奨タイトル: "AIと個別プランで誰一人取り残さず尖った才能も制限しない最適学習", summary: "子どもの発達速度や興味の対象は一人ひとり全く異なります。全員が同じ進度で学ぶ一斉授業の限界を補うため、AI教材や個別学習プランを活用し、それぞれのペースで学べる環境を望みます。得意な分野は年齢に関わらずどんどん先へ進み、苦手な部分は立ち止まって基礎をじっくり固める。" },
     { 大分類: "個性・才能の開花", 中分類: "多様な才能を認める評価基準", 推奨タイトル: "点数主義からの脱却！個々の「好き」を可視化するポートフォリオ評価", summary: "ペーパーテストの点数や運動能力だけでなく、絵画、プログラミング、観察力、あるいは「誰にでも優しくできる」といった多様な個性を独自の強みとして認め、ポートフォリオ形式で記録・評価する仕組みを提案します。画一的な基準で順位をつけるのではなく、その子だけの「好き」や「得意」を見つけ出します。" },
-    { 大分類: "個性・才能の開花", 中分類: "特別なニーズを持つ子への支援", 推挙タイトル: "違いを価値に変えるインクルーシブ教育と専門環境のアップデート", summary: "発達障害やギフテッドなど、特異な才能や個別のニーズを持つ子どもたちが、その特性を否定されることなく伸び伸びと過ごせるインクルーシブ教育の拡充を求めます。専門知識を持つコーディネーターの増員や、個別の特性に合わせたクールダウン空間の設置などを進めてほしいです。" },
-    { 大分類: "未来を生き抜く力", 中分類: "非認知能力の育成", 推奨タイトル: "困難に直面しても折れないレジリエンスを育む非認知能力教育の義務化", summary: "やり抜く力、感情をコントロールする自制心、他者と協働するコミュニケーション力などの「非認知能力」を育む教育に重点を置いてほしいです。これらは点数化できませんが、将来の幸福度に最も影響すると言われています。困難な状況に直面しても折れないレジリエンスの土台を築きます。" },
+    { 大分類: "個性・才能の開花", 中分類: "特別なニーズを持つ子への支援", 推奨タイトル: "違いを価値に変えるインクルーシブ教育と専門環境のアップデート", summary: "発達障害やギフテッドなど、特異な才能や個別のニーズを持つ子どもたちが、その特性を否定されることなく伸び伸びと過ごせるインクルーシブ教育の拡充を求めます。専門知識を持つコーディネーターの増員や、個別の特性に合わせたクールダウン空間の設置などを進めてほしいです。" },
+    { 大分類: "未来を生き抜く力", 中分類: "非認知能力の育成", 推奨タイトル: "困難に直面しても折れないレジリエンスを育む非認知能力教育の義務化", summary: "やり抜く力、感情をコントロールする自制心、他者と協働するコミュニケーション力などの「非認知能力」を育む教育に重点を置いてほしいです。これらは点数化できませんが、将来の幸福度最も影響すると言われています。困難な状況に直面しても折れないレジリエンスの土台を築きます。" },
     { 大分類: "未来を生き抜く力", 中分類: "多様な人々と協働する体験", 推奨タイトル: "多世代・多文化と交わり地域の課題を共に解決するリアル協働スキル", summary: "同世代や学級内だけに閉じこもるのではなく、異なる年齢の子どもたちや、地域の高齢者、外国籍の住民、多様な職業の社会人と交流し、共に地域の課題解決に取り組む機会を設けてください。背景の異なる他者の意見を傾聴し、尊重しながら協働する経験は必須のスキルとなります。" },
     { 大分類: "未来を生き抜く力", 中分類: "答えのない問いに挑む力", 推奨タイトル: "正解のない現代社会のリアルな課題に挑み最適解を導く実践的市民教育", summary: "「気候変動」や「地域の過疎化」など、大人でも正解が分からない現代社会のリアルな課題について考え、議論する機会をカリキュラムに組み込んでほしいです。あらかじめ用意された正解を探すのではなく、不確実な情報の中から自分たちなりの最適解を導き出す力を養います。" }
 ];
@@ -209,17 +242,24 @@ const MOCK_OPINIONS = [
 // ==========================================
 async function fetchOpinions() {
     try {
-        console.log("📡 GASから一覧データを取得中...");
+        console.log("📡 GASから最新のスプレッドシートデータを取得中...");
         const res = await fetch(GAS_URL);
         let data = await res.json();
         
-        // GASから配列が正しく取得できているかチェック
-        if (!Array.isArray(data)) {
-            console.log("GASデータが空、または形式が異なるため模擬データを使用します。");
-            allOpinions = [...MOCK_OPINIONS];
+        // 📌 【修正】GASからの返り値（配列）のプロパティをフロントの仕様(category/title/summary)に正規化してマージ
+        if (Array.isArray(data)) {
+            const normalizedGasData = data.map(item => ({
+                大分類: item.category || "その他",
+                category: item.category || "その他",
+                中分類: item.midCat || "一般テーマ",
+                midCat: item.midCat || "一般テーマ",
+                推奨タイトル: item.title || "無題の提案",
+                title: item.title || "無題の提案",
+                summary: item.summary || item.content || "内容なし"
+            }));
+            allOpinions = [...normalizedGasData, ...MOCK_OPINIONS];
         } else {
-            // スプレッドシート側のキー（category, title, summary）を担保しつつマージ
-            allOpinions = [...data, ...MOCK_OPINIONS];
+            allOpinions = [...MOCK_OPINIONS];
         }
         renderIdeaMap();
         renderTeianBako();
@@ -253,7 +293,7 @@ function renderIdeaMap() {
                                 <div class="opinion-card border-primary-custom h-100 p-3 bg-white border rounded" style="border-left: 4px solid #3b82f6 !important;">
                                     <div class="badge bg-secondary mb-2" style="font-size:8pt;">${o.midCat || o.中分類 || "一般テーマ"}</div>
                                     <div class="fw-bold text-dark mb-2" style="font-size:10.5pt;">${o.title || o.推奨タイトル || "無題の提案"}</div>
-                                    <p class="text-muted small mb-0" style="line-height:1.6;">${o.summary || o.refinedText || o.content || "内容なし"}</p>
+                                    <p class="text-muted small mb-0" style="line-height:1.6;">${o.summary || "内容なし"}</p>
                                 </div>
                             </div>
                           `).join('')}
@@ -295,7 +335,7 @@ function renderTeianBako() {
                                     <tr>
                                         <td><span class="badge bg-secondary">${o.midCat || o.中分類 || "未定"}</span></td>
                                         <td class="fw-bold text-dark">${o.title || o.推奨タイトル || "無題"}</td>
-                                        <td class="text-muted" style="line-height:1.5;">${o.summary || o.refinedText || o.content || "内容なし"}</td>
+                                        <td class="text-muted" style="line-height:1.5;">${o.summary || "内容なし"}</td>
                                     </tr>
                                   `).join('')}
                             </tbody>
@@ -308,7 +348,6 @@ function renderTeianBako() {
     });
 }
 
-// アコーディオン開閉共通関数
 window.toggleAccordion = function(id) {
     const body = document.getElementById(`${id}-body`);
     const chevron = document.getElementById(`${id}-chevron`);
