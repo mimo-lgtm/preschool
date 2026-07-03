@@ -41,6 +41,267 @@ document.addEventListener("DOMContentLoaded", function () {
         btnAiAnalysis.addEventListener("click", async function () {
             console.log("🚀 AI壁打ちボタンがクリックされました");
             
+            // 入力欄の取得（txtContentが見つからない場合は、画面上の最初のtextareaから取得）
+            let txtContent = document.getElementById("txtContent");
+            if (!txtContent) {
+                txtContent = document.querySelector("textarea"); 
+            }
+            
+            const content = txtContent ? txtContent.value.trim() : "";
+            console.log("📝 読み取った入力内容:", content);
+
+            if (!content) {
+                alert("あなたの想いやアイデアを自由に入力してください。");
+                return;
+            }
+
+            // ボタンをローディング状態にする
+            btnAiAnalysis.disabled = true;
+            btnAiAnalysis.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> AIが思考を整理中...`;
+
+            try {
+                console.log("📡 GASへ通信を開始します...");
+                const res = await fetch(GAS_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify({ action: "analyze", content: content })
+                });
+                const data = await res.json();
+                console.log("📥 GASからの返答:", data);
+
+                if (data.status === "success") {
+                    currentAiResult = data.result;
+
+                    if (resTitle) resTitle.textContent = currentAiResult.推奨タイトル || currentAiResult.title || "無題の提案";
+                    if (resCategory) resCategory.textContent = currentAiResult.大分類 || currentAiResult.category || "その他";
+                    if (resMidCat) resMidCat.textContent = currentAiResult.中分類 || currentAiResult.midCat || "未定";
+                    if (resRefinedText) resRefinedText.textContent = currentAiResult.要約200 || currentAiResult.refinedText || currentAiResult.summary;
+                    if (resReason) resReason.textContent = currentAiResult.選定理由 || currentAiResult.reason || "記載なし";
+
+                    if (aiPlaceholder) aiPlaceholder.classList.add("d-none");
+                    if (aiAssistBox) aiAssistBox.classList.remove("d-none");
+                } else {
+                    alert("AI分析エラー: " + data.message);
+                }
+            } catch (err) {
+                console.error("🚨 エラー詳細:", err);
+                alert("通信エラーが発生しました。コンソールログを確認してください。");
+            } finally {
+                btnAiAnalysis.disabled = false;
+                btnAiAnalysis.innerHTML = `✨ 1. 意見を送信してAIと壁打ちする`;
+            }
+        });
+    }
+
+    // 📥 2. 「この内容で提案箱へ投稿する」ボタンのクリック処理
+    if (btnSubmitToBox) {
+        btnSubmitToBox.addEventListener("click", async function () {
+            if (!currentAiResult) return;
+
+            const confirmPost = confirm("AIが整理・肉付けしたこの内容で、正式に提案箱へ投稿しますか？");
+            if (!confirmPost) return;
+
+            let txtContent = document.getElementById("txtContent") || document.querySelector("textarea");
+            const rawText = txtContent ? txtContent.value.trim() : "";
+
+            btnSubmitToBox.disabled = true;
+            btnSubmitToBox.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> 提案箱へ投稿中...`;
+
+            try {
+                const res = await fetch(GAS_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify({
+                        action: "submit",
+                        content: rawText,
+                        title: currentAiResult.推奨タイトル || currentAiResult.title,
+                        summary: currentAiResult.要約200 || currentAiResult.refinedText || currentAiResult.summary,
+                        category: currentAiResult.大分類 || currentAiResult.category || "その他",
+                        midCat: currentAiResult.中分類 || currentAiResult.midCat
+                    })
+                });
+                const data = await res.json();
+
+                if (data.status === "success") {
+                    alert(`提案箱への投稿が正常に完了しました！\n大分類【${data.result.大分類 || "分類中"}】へ格納されました。`);
+                    
+                    if (txtContent) txtContent.value = "";
+                    if (aiPlaceholder) aiPlaceholder.classList.remove("d-none");
+                    if (aiAssistBox) aiAssistBox.classList.add("d-none");
+                    currentAiResult = null;
+
+                    fetchOpinions();
+                } else {
+                    alert("投稿エラー: " + data.message);
+                    btnSubmitToBox.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert("送信中にエラーが発生しました。");
+                btnSubmitToBox.disabled = false;
+            }
+        });
+    }
+});
+
+// ==========================================
+// 📊 データ取得 & アコーディオン描画関数エリア
+// ==========================================
+const MOCK_OPINIONS = [
+    { 大分類: "シームレス成長支援", 中分類: "保幼小の連携強化", 推奨タイトル: "環境の変化による「小1の壁」を乗り跨える保幼小の縦の連携強化", summary: "保育園・幼稚園から小学校への進学時、子どもの特性や支援内容がスムーズに引き継がれる仕組みを求めます。" },
+    { 大分類: "シームレス成長支援", 中分類: "切れ目のない相談窓口", 推奨タイトル: "出産前から高校生まで一貫して家族に寄り添う担当伴走制度の創設", summary: "出産前から高校生まで、子どもの成長ステージが変わっても同じ窓口や担当者が並走してくれる制度を提案します。" },
+    { 大分類: "主体的な学び", 中分類: "子ども主導のプロジェクト学習", 推奨タイトル: "幼児期から地域を舞台に問いを立てるプロジェクト型探究学習の導入", summary: "先生からの一方的な授業ではなく、子どもたちが日常生活の疑問から問いを立て、調査や議論を行う学習を導入すべきです。" },
+    { 大分類: "楽しさと好奇心", 中分類: "五感を使う自然体験", 推奨タイトル: "地元の豊かな山川海をフィールドにする五感フル活用の自然体験教育", summary: "画面の中の知識ではなく、泥に触れ、虫を捕まえ、植物の匂いを嗅ぐといった五感をフルに使う自然体験を幼児教育の軸にしてほしいです。" },
+    { 大分類: "個性・才能の開花", 中分類: "個別最適化された学習プラン", 推奨タイトル: "AIと個別プランで誰一人取り残さず尖った才能も制限しない最適学習", summary: "全員が同じ進度で学ぶ一斉授業の限界を補うため、AI教材や個別学習プランを活用し、それぞれのペースで学べる環境を望みます。" },
+    { 大分類: "未来を生き抜く力", 中分類: "非認知能力の育成", 推奨タイトル: "困難に直面しても折れないレジリエンスを育む非認知能力教育の義務化", summary: "やり抜く力、感情をコントロールする自制心、他者と協働するコミュニケーション力などの「非認知能力」を育む教育に重点を置いてほしいです。" }
+];
+
+async function fetchOpinions() {
+    try {
+        const res = await fetch(GAS_URL);
+        let data = await res.json();
+        
+        // 【修正】コロン2つになっていた部分を、正しい構文「.（ドット）」に直しました
+        if (!Array.isArray(data) || data.length < 3) {
+            allOpinions = [...MOCK_OPINIONS];
+        } else {
+            allOpinions = [...data, ...MOCK_OPINIONS];
+        }
+        renderIdeaMap();
+        renderTeianBako();
+    } catch (err) {
+        allOpinions = [...MOCK_OPINIONS];
+        renderIdeaMap();
+        renderTeianBako();
+    }
+}
+
+function renderIdeaMap() {
+    const container = document.getElementById("matrixContainer");
+    if (!container) return;
+    container.innerHTML = "";
+
+    MAIN_CATEGORIES.forEach((cat, index) => {
+        const filtered = allOpinions.filter(o => (o.category === cat || o.大分類 === cat));
+        const itemHtml = `
+            <div class="category-accordion-item">
+                <div class="category-accordion-header" onclick="toggleAccordion('map-sec-${index}')">
+                    <span>📁 ${cat} (${filtered.length}件)</span>
+                    <span class="chevron" id="map-sec-${index}-chevron">▼</span>
+                </div>
+                <div class="category-accordion-body d-none" id="map-sec-${index}-body">
+                    <div class="row g-3">
+                        ${filtered.length === 0 ? '<p class="text-muted small p-2 mb-0">この分野にはまだ意見がありません。</p>' : 
+                          filtered.map(o => `
+                            <div class="col-md-6">
+                                <div class="opinion-card border-primary-custom h-100 p-3 bg-white border rounded">
+                                    <div class="badge bg-secondary mb-2" style="font-size:8pt;">${o.midCat || o.中分類 || "一般テーマ"}</div>
+                                    <div class="fw-bold text-dark mb-2" style="font-size:10.5pt;">${o.title || o.推奨タイトル || "無題の提案"}</div>
+                                    <p class="text-muted small mb-0" style="line-height:1.6;">${o.summary || o.refinedText || o.content || "内容なし"}</p>
+                                </div>
+                            </div>
+                          `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML("beforeend", itemHtml);
+    });
+}
+
+function renderTeianBako() {
+    const container = document.getElementById("listContainer");
+    if (!container) return;
+    container.innerHTML = "";
+
+    MAIN_CATEGORIES.forEach((cat, index) => {
+        const filtered = allOpinions.filter(o => (o.category === cat || o.大分類 === cat));
+        const itemHtml = `
+            <div class="category-accordion-item">
+                <div class="category-accordion-header" onclick="toggleAccordion('list-sec-${index}')">
+                    <span>📥 ${cat} 一覧 (${filtered.length}件)</span>
+                    <span class="chevron" id="list-sec-${index}-chevron">▼</span>
+                </div>
+                <div class="category-accordion-body d-none" id="list-sec-${index}-body">
+                    <div class="table-responsive bg-white rounded p-1">
+                        <table class="table table-hover small align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 20%">中分類</th>
+                                    <th style="width: 25%">推奨タイトル</th>
+                                    <th style="width: 55%">AI 200字要約</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filtered.length === 0 ? '<tr><td colspan="3" class="text-muted text-center py-3">届いた意見はありません。</td></tr>' : 
+                                  filtered.map(o => `
+                                    <tr>
+                                        <td><span class="badge bg-secondary">${o.midCat || o.中分類 || "未定"}</span></td>
+                                        <td class="fw-bold text-dark">${o.title || o.推奨タイトル || "無題"}</td>
+                                        <td class="text-muted" style="line-height:1.5;">${o.summary || o.refinedText || o.content || "内容なし"}</td>
+                                    </tr>
+                                  `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML("beforeend", itemHtml);
+    });
+}
+
+window.toggleAccordion = function(id) {
+    const body = document.getElementById(`${id}-body`);
+    const chevron = document.getElementById(`${id}-chevron`);
+    if (body) {
+        if (body.classList.contains("d-none")) {
+            body.classList.remove("d-none");
+            if (chevron) chevron.textContent = "▲";
+        } else {
+            body.classList.add("d-none");
+            if (chevron) chevron.textContent = "▼";
+        }
+    }
+};
+
+// 5つの一貫した大分類（カテゴリ）
+const MAIN_CATEGORIES = [
+    "シームレス成長支援",
+    "主体的な学び",
+    "楽しさと好奇心",
+    "個性・才能の開花",
+    "未来を生き抜く力"
+];
+
+let allOpinions = [];
+let currentAiResult = null;
+
+// ==========================================
+// 🎬 画面が読み込まれた時のメイン処理
+// ==========================================
+document.addEventListener("DOMContentLoaded", function () {
+    // ボタン要素の取得
+    const btnAiAnalysis = document.getElementById("btnAiAnalysis"); 
+    const btnSubmitToBox = document.getElementById("btnSubmitToBox");
+
+    // 表示パーツの取得
+    const aiPlaceholder = document.getElementById("aiPlaceholder");
+    const aiAssistBox = document.getElementById("aiAssistBox");
+    const resTitle = document.getElementById("resTitle");
+    const resCategory = document.getElementById("resCategory");
+    const resMidCat = document.getElementById("resMidCat");
+    const resRefinedText = document.getElementById("resRefinedText");
+    const resReason = document.getElementById("resReason");
+
+    // 初期データの読み込みを実行
+    fetchOpinions();
+
+    // 🧠 1. 「AIと壁打ちする」ボタンのクリック処理
+    if (btnAiAnalysis) {
+        btnAiAnalysis.addEventListener("click", async function () {
+            console.log("🚀 AI壁打ちボタンがクリックされました");
+            
             // 【自動救済策】txtContent がダメなら、画面上の最初のtextareaから文字を取得する
             let txtContent = document.getElementById("txtContent");
             if (!txtContent) {
