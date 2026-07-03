@@ -1,6 +1,6 @@
 {
     // あなたのGASウェブアプリURLに置き換えてください
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwgOIK3P6wmltLLxFrPdEuiGko8u8Ty4WAFaIDLZLIrcfUWrwiXvvr0VyEKAmYuuuiK/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyqu88PgyLyB02tf1TVxHAfzRJH6ICAj0X9DZtB7x3SWnwYSx_KjdOw6kTBj5MxQgm_/exec";
 
     // 5つの基本方針（定義通り）
     const MAIN_CATEGORIES = ["シームレス成長支援", "主体的な学び", "楽しさと好奇心", "個性・才能の開花", "未来を生き抜く力"];
