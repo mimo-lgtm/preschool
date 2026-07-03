@@ -1,153 +1,215 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <base target="_top">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Civic Compass Portal</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- 既存のアイコン・グラフライブラリをそのまま継承 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幼児教育・子育て 意見まとめ広場</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 画像の大型化とレイアウト調整 */
+        .large-tree-img {
+            width: 100%;
+            max-height: 550px;
+            object-fit: contain;
+        }
+        .large-section-thumb {
+            max-height: 140px;
+            width: auto;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .category-accordion-item {
+            margin-bottom: 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .category-accordion-header {
+            background-color: #ffffff;
+            padding: 16px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        .category-accordion-header:hover {
+            background-color: #f8f9fa;
+        }
+        .category-accordion-body {
+            background-color: #fdfdfd;
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-light">
 
-  <!-- ヘッダーおよびナビゲーション（3ページに集約） -->
-  <header class="main-header">
-    <div class="header-container">
-      <div class="logo-area">
-        <i class="fa-solid fa-compass compass-icon"></i>
-        <h1>Civic Compass <span class="sub-title">都市の未来を描く</span></h1>
-      </div>
-      <!-- ご指定の3つのボタン名へ変更し、3ページ構成に削減 -->
-      <nav class="nav-buttons">
-        <button class="nav-btn active" onclick="switchTab('map')"><i class="fa-solid fa-map"></i> アイデアの地図</button>
-        <button class="nav-btn" onclick="switchTab('chat')"><i class="fa-solid fa-comments"></i> AI壁打ち</button>
-        <button class="nav-btn" onclick="switchTab('box')"><i class="fa-solid fa-inbox"></i> 提案箱</button>
-      </nav>
+    <!-- 案内バー -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4 py-3">
+        <div class="container px-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
+                🌱 幼児教育・子育て 意見まとめ広場
+            </a>
+        </div>
+    </nav>
+
+    <div class="container px-4 pb-5">
+        <!-- 切り替えタブ -->
+        <ul class="nav nav-pills mb-4 p-1 bg-white rounded-pill shadow-sm max-width-tabs" id="platformTab" role="tablist">
+            <li class="nav-item flex-fill" role="presentation">
+                <button class="nav-link active fw-bold rounded-pill py-25 text-center" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-pane" type="button" role="tab">🗺️ アイデアの地図</button>
+            </li>
+            <li class="nav-item flex-fill" role="presentation">
+                <button class="nav-link fw-bold rounded-pill py-25 text-center" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai-pane" type="button" role="tab">🤖 AI壁打ち</button>
+            </li>
+            <li class="nav-item flex-fill" role="presentation">
+                <button class="nav-link fw-bold rounded-pill py-25 text-center" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button" role="tab">📥 提案箱</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="platformTabContent">
+            
+            <!-- ① アイデアの地図 -->
+            <div class="tab-pane fade show active" id="map-pane" role="tabpanel">
+                <div class="card shadow-sm border-0 rounded-3 mb-4 p-4 bg-white">
+                    <h5 class="fw-bold text-dark mb-2">私たちの未来の「地図」づくり</h5>
+                    <p class="text-muted small mb-0">この広場は、幼児教育・子育てに関する皆様の多様な声を、AIが高度に整理・分析し、論理的なデータへと変換するシステムです。</p>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-7">
+                        <div class="tree-image-box shadow-sm rounded-3 overflow-hidden bg-white p-2 text-center">
+                            <img src="image/logic.jpg" alt="幼児教育ロジックツリー" class="large-tree-img">
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm border-0 p-4 bg-white h-100">
+                            <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom">🌱 5つの基本方針について</h5>
+                            <div class="d-flex flex-column gap-3">
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">1. シームレス成長支援（出産〜高校）</strong></div>
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">2. 主体的な学び（子ども中心）</strong></div>
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">3. 楽しさと好奇心（探究心）</strong></div>
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">4. 個性・才能の開花（個別最適化）</strong></div>
+                                <div class="p-3 rounded bg-light border-start border-primary border-4"><strong class="d-block text-dark">5. 未来を生き抜く力（非認知能力）</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white border-start border-primary border-4">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-9">
+                            <h5 class="fw-bold text-dark mb-1">みんなの意見の地図</h5>
+                            <p class="text-muted small mb-0">下の項目をクリックすると、その中にある詳しい意見（推奨タイトル・200字要約）が開きます。最初は5つの分野のみが表示されています。</p>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <img src="image/river.jpg" alt="川" class="img-fluid large-section-thumb">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最初は5つの大分類のみ並ぶコンテナ -->
+                <div id="matrixContainer"></div>
+            </div>
+
+            <!-- ② AI壁打ち -->
+            <div class="tab-pane fade" id="ai-pane" role="tabpanel">
+                <div class="row g-4">
+                    <!-- 左側：入力フォーム -->
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm border-0 p-4 bg-white rounded-3">
+                            <div class="mb-3 text-center">
+                                <img src="image/teacher.jpg" alt="対話" class="w-100 rounded-3 shadow-sm object-fit-cover" style="height: 160px;">
+                            </div>
+                            <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom">📝 意見の入力</h5>
+                            
+                            <form id="opinionForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small text-secondary">あなたの意見（思いついたままでOK）</label>
+                                    <textarea id="content" class="form-control form-control-custom" rows="10" placeholder="ここに自由に子育てや教育に関する意見を記入してください..." required></textarea>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="button" id="btnAiAnalysis" class="btn btn-dark fw-bold py-25 rounded-pill shadow-sm">✨ 1. 意見を送信してAIと壁打ちする</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- 右側：AI対話スペース（論点表示、5視点肉付け、200字要約、推奨タイトルを同時に一画面で展開） -->
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm border-0 p-4 bg-white rounded-3 h-100 d-flex flex-column" id="aiResponseCard">
+                            <h5 class="fw-bold text-dark mb-2 pb-2 border-bottom">🤖 AI思考・洗練スペース</h5>
+                            
+                            <!-- 結果出力ボックス -->
+                            <div id="aiAssistBox" class="d-none flex-grow-1 d-flex flex-column gap-3">
+                                
+                                <!-- 1. 論点の概要 -->
+                                <div class="p-3 bg-light border rounded">
+                                    <span class="badge bg-secondary mb-2">2. 意見の論点・概要</span>
+                                    <div id="aiSummaryText" class="text-dark small" style="white-space: pre-wrap;"></div>
+                                </div>
+
+                                <!-- 2. 5つの視点からの肉付け -->
+                                <div class="p-3 bg-light border rounded">
+                                    <span class="badge bg-dark mb-2">3. 5つの視点による深掘り</span>
+                                    <div id="aiPerspectivesText" class="text-dark small" style="white-space: pre-wrap; line-height: 1.5;"></div>
+                                </div>
+
+                                <!-- 3. 推奨タイトル & 200字要約 -->
+                                <div class="p-3 border border-primary-subtle rounded bg-white shadow-sm">
+                                    <div class="mb-2">
+                                        <span class="badge bg-primary mb-1">👑 生成された推奨タイトル</span>
+                                        <h6 id="aiTitleText" class="fw-bold text-primary mb-0 p-1"></h6>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-primary mb-1">📝 200字要約</span>
+                                        <p id="aiRefinedText" class="text-dark small mb-0" style="line-height: 1.6; white-space: pre-wrap;"></p>
+                                    </div>
+                                </div>
+
+                                <!-- 4. 提案箱への投稿確認ボタン -->
+                                <div class="text-center pt-2 mt-auto">
+                                    <button type="button" id="btnSubmitToBox" class="btn btn-primary btn-lg fw-bold px-5 rounded-pill shadow">📥 この内容で提案箱に投稿する</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 初期プレースホルダー -->
+                            <div id="aiPlaceholder" class="border border-dashed rounded-3 p-5 text-center my-auto text-muted small bg-light">
+                                <span style="font-size: 2.5rem;" class="d-block mb-2">💡</span>
+                                左側に意見を入力し、「AIと壁打ちする」ボタンを押すと、論点の整理、5つの視点による肉付け、200字要約、推奨タイトルが同時にここに構築されます。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ③ 提案箱 -->
+            <div class="tab-pane fade" id="list-pane" role="tabpanel">
+                <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white border-start border-dark border-4">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-9">
+                            <h5 class="fw-bold text-dark mb-2">📥 提案箱（届いた意見の一覧）</h5>
+                            <p class="text-muted small mb-0">これまでに届いた意見が5つの分野ごとに格納されています。最初は分野の項目のみが表示されています。</p>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <img src="image/ar.jpg" alt="未来" class="img-fluid large-section-thumb">
+                        </div>
+                    </div>
+                </div>
+                <!-- 最初は5つの分野の項目のみ並ぶコンテナ -->
+                <div id="listContainer"></div>
+            </div>
+
+        </div>
     </div>
-  </header>
 
-  <!-- メインコンテンツ領域 -->
-  <main class="main-wrapper">
-    
-    <!-- 1. アイデアの地図 ページ -->
-    <section id="page-map" class="tab-content active">
-      <div class="vision-section">
-        <div class="vision-card-header">
-          <h2><i class="fa-solid fa-eye"></i> 現在の Civic Vision</h2>
-          <span id="vision-v-tag" class="v-tag">---</span>
-        </div>
-        <p id="vision-text-display" class="vision-p">読み込み中...</p>
-        <div id="vision-image-wrapper" class="vision-img-zone" style="display:none;"></div>
-      </div>
-
-      <div class="dashboard-grid">
-        <div class="list-container">
-          <div class="list-header-bar">
-            <h3><i class="fa-solid fa-list"></i> 収集・統合された提案一覧</h3>
-            <span id="total-count-badge" class="badge-count">0 件</span>
-          </div>
-          <!-- カテゴリフィルター（既存のMAIN_CATEGORIESと連動） -->
-          <div id="category-filter-bar" class="filter-flex"></div>
-          <div id="proposals-list-target" class="cards-vertical-list">
-            <p class="status-msg">データを読み込んでいます...</p>
-          </div>
-        </div>
-        
-        <!-- 統計サイドバー（既存のグラフ表示をそのまま維持） -->
-        <div class="stats-sidebar">
-          <div class="sidebar-card">
-            <h3><i class="fa-solid fa-chart-pie"></i> 分類別ウエイト</h3>
-            <div class="chart-holder">
-              <canvas id="weightChart"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. AI壁打ち ページ -->
-    <section id="page-chat" class="tab-content">
-      <div class="chat-layout">
-        <div class="chat-instruction">
-          <h3><i class="fa-solid fa-robot"></i> AIファシリテーターとの壁打ち</h3>
-          <p>あなたの意見やアイデアを自由に入力してください。AIが多角的な視点から分析・深掘りをお手伝いします。</p>
-        </div>
-        <div class="chat-input-zone">
-          <textarea id="chat-input-text" placeholder="ここにあなたの意見を入力（例：駅前に子どもが遊べる屋内施設が欲しい、など）..."></textarea>
-          <button id="btn-analyze" onclick="startAIAnalysis()"><i class="fa-solid fa-paper-plane"></i> 分析を実行する</button>
-        </div>
-        <!-- AIからの返答展開エリア -->
-        <div id="ai-response-wrapper" class="ai-box" style="display:none;">
-          <div class="ai-res-header"><h4><i class="fa-solid fa-wand-magic-sparkles"></i> AIによる分析・多角化視点</h4></div>
-          <div id="ai-res-content" class="ai-res-body"></div>
-          <div class="ai-save-action">
-            <button id="btn-save-post" onclick="saveProposalToSheet()"><i class="fa-solid fa-floppy-disk"></i> この内容を提案箱へ送る</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. 提案箱 ページ -->
-    <section id="page-box" class="tab-content">
-      <div class="box-layout">
-        <div class="box-intro">
-          <h3><i class="fa-solid fa-envelope-open-text"></i> 直投稿・提案箱</h3>
-          <p>AIの壁打ちを経ずに、直接アイデアをシステムへ投稿・ストックすることができます。</p>
-        </div>
-        <div class="direct-form">
-          <div class="form-group">
-            <label>タイトル</label>
-            <input type="text" id="direct-title" placeholder="提案のタイトル（20字以内推奨）">
-          </div>
-          <div class="form-group">
-            <label>提案本文</label>
-            <textarea id="direct-fulltext" placeholder="具体的な提案内容を入力してください..."></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>投稿者名</label>
-              <input type="text" id="direct-author" placeholder="匿名市民">
-            </div>
-            <div class="form-group">
-              <label>備考</label>
-              <input type="text" id="direct-note" placeholder="自由記述欄">
-            </div>
-          </div>
-          <button id="btn-direct-submit" onclick="submitDirectProposal()"><i class="fa-solid fa-share-from-square"></i> 提案箱に直接投稿する</button>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- 既存の統合詳細表示用モーダルウィンドウを100%流用 -->
-  <div id="detail-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-window">
-      <div class="modal-header">
-        <h3 id="modal-title">提案詳細</h3>
-        <button class="modal-close-btn" onclick="closeModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-meta-row">
-          <span id="modal-badge-main" class="badge">---</span>
-          <span id="modal-badge-sub" class="badge badge-sub">---</span>
-          <span id="modal-badge-status" class="badge badge-status">---</span>
-        </div>
-        <div class="modal-section">
-          <h4>200字要約</h4>
-          <p id="modal-summary" class="modal-p-box"></p>
-        </div>
-        <div class="modal-section">
-          <h4>詳細内容・元の投稿</h4>
-          <p id="modal-fulltext" class="modal-p-box style-pre"></p>
-        </div>
-        <div id="modal-extra-info" class="modal-footer-meta"></div>
-      </div>
-    </div>
-  </div>
-
-  <script src="js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
