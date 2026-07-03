@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!mainHeaderImg) return;
 
             if (targetId === "kabechuchi-tab") {
-                mainHeaderImg.src = "image/ai.jpg";
+                mainHeaderImg.src = "image/ar.jpg";
             } else if (targetId === "map-tab") {
                 mainHeaderImg.src = "image/logic.jpg";
             } else if (targetId === "list-tab") {
