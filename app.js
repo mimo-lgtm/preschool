@@ -1,7 +1,6 @@
 // ==========================================
 // 🌐 設定エリア（GASのWebアプリURL）
 // ==========================================
-// ⚠️ GAS側を修正して「新しいデプロイ」を行った後の最新URLを貼り付けてください
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzS2Bq8kgPcefvyQKB4B5cLN7Shm1mUbrS25cvGhtJgiCMKTmbMPz-4wd1y_7EjrzA/exec";
 
 const MAIN_CATEGORIES = [
@@ -12,16 +11,22 @@ const MAIN_CATEGORIES = [
     "未来を生き抜く力"
 ];
 
+const FIXED_MID_CATEGORIES = {
+    "シームレス成長支援": ["保幼小の連携強化", "切れ目のない相談窓口", "育児休業からの復職支援", "その他"],
+    "主体的な学び": ["子ども主導のプロジェクト学習", "選択制のアクティビティ", "デジタルを活用した自己表現", "その他"],
+    "楽しさと好奇心": ["五感を使う自然体験", "失敗を歓迎する科学遊び", "地域のアート・文化資源の活用", "その他"],
+    "個性・才能の開花": ["個別最適化された学習プラン", "多様な才能を認める評価基準", "特別なニーズを持つ子への支援", "その他"],
+    "未来を生き抜く力": ["非認知能力の育成", "多様な人々と協働する体験", "答えのない問いに挑む力", "その他"]
+};
+
 let allOpinions = [];
 let currentAiResult = null;
 
 document.addEventListener("DOMContentLoaded", function () {
     const btnAiAnalysis = document.getElementById("btnAiAnalysis"); 
     const btnSubmitToBox = document.getElementById("btnSubmitToBox");
-
     const aiPlaceholder = document.getElementById("aiPlaceholder");
     const aiAssistBox = document.getElementById("aiAssistBox");
-    
     const aiSummaryText = document.getElementById("aiSummaryText");
     const aiPerspectivesText = document.getElementById("aiPerspectivesText");
     const aiTitleText = document.getElementById("aiTitleText");
@@ -29,11 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetchOpinions();
 
-    // 🧠 1. 「AIと壁打ちする」ボタンのクリック処理
     if (btnAiAnalysis) {
         btnAiAnalysis.addEventListener("click", async function () {
-            console.log("🚀 AI壁打ちボタンがクリックされました");
-            
             const txtContent = document.getElementById("content");
             const contentValue = txtContent ? txtContent.value.trim() : "";
 
@@ -55,16 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (data.status === "success") {
                     currentAiResult = data.result;
-
                     const bigCat = currentAiResult["大分類"] || "その他";
                     const midCat = currentAiResult["中分類"] || "その他";
 
-                    // 1. 【自動分類】の表示（固定項目のみ。余計な説明文やキーワードは完全削除）
-                    if (aiSummaryText) {
-                        aiSummaryText.innerHTML = `<strong>【自動分類】</strong> ${bigCat} ＞ ${midCat}`;
-                    }
+                    if (aiSummaryText) aiSummaryText.innerHTML = `<strong>【自動分類】</strong> ${bigCat} ＞ ${midCat}`;
 
-                    // 2. 【5つの視点による深掘り】の表示（ご指定のa〜eの分析項目をそのままマッピング）
                     if (aiPerspectivesText) {
                         aiPerspectivesText.innerHTML = `
 <div class="mb-3"><strong>a. この意見の核心（本当の願い・課題）</strong><br><span class="text-dark">${currentAiResult["核心"] || "分析中"}</span></div>
@@ -75,21 +72,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         `.trim();
                     }
 
-                    // 3. 👑 推奨タイトル
-                    if (aiTitleText) {
-                        aiTitleText.textContent = currentAiResult["推奨タイトル"] || "無題の提案";
-                    }
+                    if (aiTitleText) aiTitleText.textContent = currentAiResult["推奨タイトル"] || "無題の提案";
+                    if (aiRefinedText) aiRefinedText.textContent = currentAiResult["要約200"] || "";
 
-                    // 4. 📝 200字要約
-                    if (aiRefinedText) {
-                        aiRefinedText.textContent = currentAiResult["要約200"] || "";
-                    }
-
-                    // 初期プレースホルダーボックスを完全に消去
-                    if (aiPlaceholder) {
-                        aiPlaceholder.style.setProperty("display", "none", "important");
-                    }
-                    // 分析結果エリアを表示
+                    if (aiPlaceholder) aiPlaceholder.style.setProperty("display", "none", "important");
                     if (aiAssistBox) {
                         aiAssistBox.style.setProperty("display", "flex", "important");
                         aiAssistBox.classList.remove("d-none");
@@ -98,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert("AI分析エラー: " + data.message);
                 }
             } catch (err) {
-                console.error("🚨 エラー詳細:", err);
+                console.error(err);
                 alert("通信エラーが発生しました。");
             } finally {
                 btnAiAnalysis.disabled = false;
@@ -107,16 +93,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 📥 2. 「この内容で提案箱へ投稿する」ボタンのクリック処理
     if (btnSubmitToBox) {
         btnSubmitToBox.addEventListener("click", async function () {
             if (!currentAiResult) return;
-
-            const bigCat = currentAiResult["大分類"] || "その他";
+            const bigCat = currentAiResult["大分類"] || "...その他";
             const midCat = currentAiResult["中分類"] || "その他";
 
-            const confirmPost = confirm(`AIが整理した内容で、正式に提案箱へ投稿しますか？\n（大分類「${bigCat}」の中の中分類「${midCat}」に格納されます）`);
-            if (!confirmPost) return;
+            if (!confirm(`正式に提案箱へ投稿しますか？\n（大分類「${bigCat}」＞ 中分類「${midCat}」へ格納されます）`)) return;
 
             const txtContent = document.getElementById("content");
             const rawText = txtContent ? txtContent.value.trim() : "";
@@ -140,18 +123,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await res.json();
 
                 if (data.status === "success") {
-                    alert(`提案箱への投稿が正常に完了しました！\n分野【${bigCat} ＞ ${midCat}】へ格納されました。`);
-                    
+                    alert(`投稿が完了しました！\n分野【${bigCat} ＞ ${midCat}】へ格納されました。`);
                     if (txtContent) txtContent.value = "";
-                    
                     if (aiAssistBox) aiAssistBox.classList.add("d-none");
-                    if (aiPlaceholder) {
-                        aiPlaceholder.style.removeProperty("display");
-                    }
+                    if (aiPlaceholder) aiPlaceholder.style.removeProperty("display");
                     currentAiResult = null;
 
                     await fetchOpinions();
-                    
                     const mapTabBtn = document.getElementById("map-tab");
                     if (mapTabBtn) mapTabBtn.click();
                 } else {
@@ -160,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } catch (err) {
                 console.error(err);
-                alert("送信中にエラーが発生しました。");
+                alert("送信エラーが発生しました。");
                 btnSubmitToBox.disabled = false;
             }
         });
@@ -168,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================
-// 📊 データ取得 & 各種レンダリング (以下、変更なし)
+// 📊 3階層ドリルダウンデータのレンダリング
 // ==========================================
 async function fetchOpinions() {
     try {
@@ -180,7 +158,6 @@ async function fetchOpinions() {
                 category: item.category || "その他",
                 中分類: item.midCat || "その他",
                 midCat: item.midCat || "その他",
-                推奨タイトル: item.title || "無題の提案",
                 title: item.title || "無題の提案",
                 summary: item.summary || item.content || "内容なし"
             }));
@@ -192,32 +169,56 @@ async function fetchOpinions() {
     }
 }
 
+// 🗺️ ① 【アイデアの地図】 大 ＞ 中 ＞ 投稿（カード）
 function renderIdeaMap() {
     const container = document.getElementById("matrixContainer");
     if (!container) return;
     container.innerHTML = "";
 
-    MAIN_CATEGORIES.forEach((cat, index) => {
-        const filtered = allOpinions.filter(o => (o.category === cat || o.大分類 === cat));
-        const itemHtml = `
-            <div class="category-accordion-item">
-                <div class="category-accordion-header" onclick="toggleAccordion('map-sec-${index}')">
-                    <span>📁 ${cat} (${filtered.length}件)</span>
-                    <span class="chevron" id="map-sec-${index}-chevron">▼</span>
-                </div>
-                <div class="category-accordion-body d-none" id="map-sec-${index}-body">
-                    <div class="row g-3">
-                        ${filtered.length === 0 ? '<p class="text-muted small p-2 mb-0">この分野にはまだ意見がありません。</p>' : 
-                          filtered.map(o => `
-                            <div class="col-md-6">
-                                <div class="opinion-card border-primary-custom h-100 p-3 bg-white border rounded" style="border-left: 4px solid #3b82f6 !important;">
-                                    <div class="badge bg-secondary mb-2" style="font-size:8pt;">${o.midCat || o.中分類 || "その他"}</div>
-                                    <div class="fw-bold text-dark mb-2" style="font-size:10.5pt;">${o.title || o.推奨タイトル || "無題の提案"}</div>
-                                    <p class="text-muted small mb-0" style="line-height:1.6;">${o.summary || "内容なし"}</p>
-                                </div>
-                            </div>
-                          `).join('')}
+    MAIN_CATEGORIES.forEach((cat, bIdx) => {
+        const catOpinions = allOpinions.filter(o => o.大分類 === cat);
+        const midCategories = FIXED_MID_CATEGORIES[cat] || ["その他"];
+
+        let midHtml = "";
+        midCategories.forEach((mid, mIdx) => {
+            const matchedOpinions = catOpinions.filter(o => o.中分類 === mid);
+            
+            midHtml += `
+                <div class="border rounded mb-2 bg-light">
+                    <div class="p-2 fw-bold text-secondary d-flex justify-content-between align-items-center" style="cursor:pointer; font-size:10pt;" onclick="toggleAccordion('map-mid-${bIdx}-${mIdx}')">
+                        <span>📂 ${mid} (${matchedOpinions.length}件)</span>
+                        <span id="map-mid-${bIdx}-${mIdx}-chevron">▼</span>
                     </div>
+                    <div id="map-mid-${bIdx}-${mIdx}-body" class="p-3 bg-white d-none border-top">
+                        <div class="row g-2">
+                            ${matchedOpinions.length === 0 ? '<p class="text-muted small mb-0">このテーマへの投稿はまだありません。</p>' : 
+                              matchedOpinions.map((o, oIdx) => `
+                                <div class="col-12">
+                                    <div class="p-2 border rounded" style="cursor:pointer; border-left: 3px solid #10b981 !important;" onclick="toggleAccordion('map-op-${bIdx}-${mIdx}-${oIdx}')">
+                                        <div class="fw-bold text-dark small d-flex justify-content-between">
+                                            <span>📝 ${o.title}</span>
+                                            <span id="map-op-${bIdx}-${mIdx}-${oIdx}-chevron">▼</span>
+                                        </div>
+                                        <div id="map-op-${bIdx}-${mIdx}-${oIdx}-body" class="text-muted small mt-2 pt-2 border-top d-none" style="line-height:1.5;">
+                                            ${o.summary}
+                                        </div>
+                                    </div>
+                                </div>
+                              `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        const itemHtml = `
+            <div class="category-accordion-item mb-3 shadow-sm border rounded">
+                <div class="category-accordion-header bg-primary text-white p-3 fw-bold d-flex justify-content-between align-items-center" style="cursor:pointer; border-radius: 4px 4px 0 0;" onclick="toggleAccordion('map-big-${bIdx}')">
+                    <span>📁 ${cat} (${catOpinions.length}件)</span>
+                    <span id="map-big-${bIdx}-chevron">▼</span>
+                </div>
+                <div class="category-accordion-body p-3 bg-white d-none" id="map-big-${bIdx}-body">
+                    ${midHtml}
                 </div>
             </div>
         `;
@@ -225,42 +226,64 @@ function renderIdeaMap() {
     });
 }
 
-// ③ 【届いた提案箱】の描画
+// 📥 ③ 【届いた提案箱】 大 ＞ 中 ＞ 投稿（テーブル）
 function renderTeianBako() {
     const container = document.getElementById("listContainer");
     if (!container) return;
     container.innerHTML = "";
 
-    MAIN_CATEGORIES.forEach((cat, index) => {
-        const filtered = allOpinions.filter(o => (o.category === cat || o.大分類 === cat));
-        const itemHtml = `
-            <div class="category-accordion-item">
-                <div class="category-accordion-header" onclick="toggleAccordion('list-sec-${index}')">
-                    <span>📥 ${cat} 一覧 (${filtered.length}件)</span>
-                    <span class="chevron" id="list-sec-${index}-chevron">▼</span>
-                </div>
-                <div class="category-accordion-body d-none" id="list-sec-${index}-body">
-                    <div class="table-responsive bg-white rounded p-1">
-                        <table class="table table-hover small align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 20%">中分類</th>
-                                    <th style="width: 25%">推奨タイトル</th>
-                                    <th style="width: 55%">AI 200字要約</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${filtered.length === 0 ? '<tr><td colspan="3" class="text-muted text-center py-3">届いた意見はありません。</td></tr>' : 
-                                  filtered.map(o => `
-                                    <tr>
-                                        <td><span class="badge bg-secondary">${o.midCat || o.中分類 || "その他"}</span></td>
-                                        <td class="fw-bold text-dark">${o.title || o.推奨タイトル || "無題"}</td>
-                                        <td class="text-muted" style="line-height:1.5;">${o.summary || "内容なし"}</td>
-                                    </tr>
-                                  `).join('')}
-                            </tbody>
-                        </table>
+    MAIN_CATEGORIES.forEach((cat, bIdx) => {
+        const catOpinions = allOpinions.filter(o => o.大分類 === cat);
+        const midCategories = FIXED_MID_CATEGORIES[cat] || ["その他"];
+
+        let midHtml = "";
+        midCategories.forEach((mid, mIdx) => {
+            const matchedOpinions = catOpinions.filter(o => o.中分類 === mid);
+
+            midHtml += `
+                <div class="border rounded mb-2 bg-light">
+                    <div class="p-2 fw-bold text-secondary d-flex justify-content-between align-items-center" style="cursor:pointer; font-size:10pt;" onclick="toggleAccordion('list-mid-${bIdx}-${mIdx}')">
+                        <span>📥 ${mid} (${matchedOpinions.length}件)</span>
+                        <span id="list-mid-${bIdx}-${mIdx}-chevron">▼</span>
                     </div>
+                    <div id="list-mid-${bIdx}-${mIdx}-body" class="p-2 bg-white d-none border-top">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0 small">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 40%">推奨タイトル（クリックで要約展開）</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${matchedOpinions.length === 0 ? '<tr><td class="text-muted text-center py-2">届いた意見はありません。</td></tr>' : 
+                                      matchedOpinions.map((o, oIdx) => `
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold text-dark py-1" style="cursor:pointer;" onclick="toggleAccordion('list-op-${bIdx}-${mIdx}-${oIdx}')">
+                                                    📌 ${o.title} <span class="float-end" id="list-op-${bIdx}-${mIdx}-${oIdx}-chevron">▼</span>
+                                                </div>
+                                                <div id="list-op-${bIdx}-${mIdx}-${oIdx}-body" class="text-muted bg-light p-2 rounded mt-1 d-none" style="line-height:1.5; font-size:9pt;">
+                                                    <strong>AI 200字要約:</strong><br>${o.summary}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                      `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        const itemHtml = `
+            <div class="category-accordion-item mb-3 shadow-sm border rounded">
+                <div class="category-accordion-header bg-dark text-white p-3 fw-bold d-flex justify-content-between align-items-center" style="cursor:pointer; border-radius: 4px 4px 0 0;" onclick="toggleAccordion('list-big-${bIdx}')">
+                    <span>📥 ${cat} 一覧 (${catOpinions.length}件)</span>
+                    <span id="list-big-${bIdx}-chevron">▼</span>
+                </div>
+                <div class="category-accordion-body p-3 bg-white d-none" id="list-big-${bIdx}-body">
+                    ${midHtml}
                 </div>
             </div>
         `;
@@ -268,6 +291,7 @@ function renderTeianBako() {
     });
 }
 
+// 🔄 万能アコーディオン開閉制御
 window.toggleAccordion = function(id) {
     const body = document.getElementById(`${id}-body`);
     const chevron = document.getElementById(`${id}-chevron`);
