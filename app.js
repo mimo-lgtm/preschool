@@ -1,6 +1,3 @@
-// ==========================================
-// 🌐 設定エリア（GASのWebアプリURL）
-// ==========================================
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzS2Bq8kgPcefvyQKB4B5cLN7Shm1mUbrS25cvGhtJgiCMKTmbMPz-4wd1y_7EjrzA/exec";
 
 const MAIN_CATEGORIES = [
@@ -31,6 +28,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const aiPerspectivesText = document.getElementById("aiPerspectivesText");
     const aiTitleText = document.getElementById("aiTitleText");
     const aiRefinedText = document.getElementById("aiRefinedText");
+
+    // 🖼️ タブ切り替え時に最上部画像を大きく変更するロジック
+    const mainHeaderImg = document.getElementById("mainHeaderImg");
+    const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('show.bs.tab', function (event) {
+            const targetId = event.target.id;
+            if (!mainHeaderImg) return;
+
+            if (targetId === "kabechuchi-tab") {
+                mainHeaderImg.src = "image/ai.jpg";
+            } else if (targetId === "map-tab") {
+                mainHeaderImg.src = "image/logic.jpg";
+            } else if (targetId === "list-tab") {
+                mainHeaderImg.src = "image/teacher.jpg";
+            }
+        });
+    });
 
     fetchOpinions();
 
@@ -96,8 +112,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnSubmitToBox) {
         btnSubmitToBox.addEventListener("click", async function () {
             if (!currentAiResult) return;
-            const bigCat = currentAiResult["大分類"] || "...その他";
-            const midCat = currentAiResult["中分類"] || "その他";
+            const bigCat = currentAiResult["大分類"] || "その他";
+            const midCat = currentAiResult["中分類"] || "hidden";
 
             if (!confirm(`正式に提案箱へ投稿しますか？\n（大分類「${bigCat}」＞ 中分類「${midCat}」へ格納されます）`)) return;
 
@@ -145,9 +161,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// ==========================================
-// 📊 3階層ドリルダウンデータのレンダリング
-// ==========================================
 async function fetchOpinions() {
     try {
         const res = await fetch(GAS_URL);
@@ -169,7 +182,6 @@ async function fetchOpinions() {
     }
 }
 
-// 🗺️ ① 【アイデアの地図】 大 ＞ 中 ＞ 投稿（カード）
 function renderIdeaMap() {
     const container = document.getElementById("matrixContainer");
     if (!container) return;
@@ -226,7 +238,6 @@ function renderIdeaMap() {
     });
 }
 
-// 📥 ③ 【届いた提案箱】 大 ＞ 中 ＞ 投稿（テーブル）
 function renderTeianBako() {
     const container = document.getElementById("listContainer");
     if (!container) return;
@@ -291,7 +302,6 @@ function renderTeianBako() {
     });
 }
 
-// 🔄 万能アコーディオン開閉制御
 window.toggleAccordion = function(id) {
     const body = document.getElementById(`${id}-body`);
     const chevron = document.getElementById(`${id}-chevron`);
