@@ -175,7 +175,7 @@ async function fetchOpinions() {
 }
 
 // ==========================================
-// 4. アイデアの地図 ＆ 提案箱の描画ロジック（GAS出力の英語プロパティ完全対応版）
+// 4. アイデアの地図 ＆ 提案箱の描画ロジック（部分一致・自動救済版）
 // ==========================================
 function renderStructuredIdeas(ideasDataset) {
     // 画面の表示エリアを初期化
@@ -186,53 +186,52 @@ function renderStructuredIdeas(ideasDataset) {
     const proposalContainer = document.getElementById("proposal-container");
     if (proposalContainer) proposalContainer.innerHTML = "";
 
-    // GASから届く英語の「category」名と、HTML側の柱番号のマッピング
-    const pillarMapping = {
-        "主体的な学び": 1,
-        "楽しさと好奇心": 2,
-        "未来を生き抜く力": 3,
-        "個性・才能の開花": 4,
-        "シームレス成長支援": 5
-    };
-
-    const pillarNames = [
-        "🌱 1. 探究心を育む知育環境",
-        "🎨 2. 感性を磨くアートと表現",
-        "🤝 3. 協調性を養うグループワーク",
-        "🌳 4. 心身を健やかに育てる自然体験",
-        "🌐 5. 地域と言語を繋ぐグローバルコミュニケーション"
+    // 柱の定義（キーワードを含んでいるかで判定します）
+    const pillarRules = [
+        { id: 1, name: "🌱 1. 探究心を育む知育環境", keyword: "主体" },
+        { id: 2, name: "🎨 2. 感性を磨くアートと表現", keyword: "好奇心" },
+        { id: 3, name: "🤝 3. 協調性を養うグループワーク", keyword: "未来" },
+        { id: 4, name: "🌳 4. 心身を健やかに育てる自然体験", keyword: "個性" },
+        { id: 5, name: "🌐 5. 地域と言語を繋ぐグローバルコミュニケーション", keyword: "シームレス" }
     ];
 
     // 5つの柱ごとにループ処理
-    pillarNames.forEach((name, index) => {
-        const pillarId = index + 1;
+    pillarRules.forEach(rule => {
+        const pillarId = rule.id;
         
-        // GASから届くデータ「item.category」を参照して仕分け
+        // スプレッドシートの「category」にキーワードが含まれているか部分一致でチェック（空文字や大文字小文字のズレも救済）
         const pillarIdeas = ideasDataset.filter(item => {
-            return pillarMapping[item.category] === pillarId;
+            if (!item.category) return false;
+            const catString = String(item.category).trim();
+            return catString.includes(rule.keyword);
         });
         
         // 提案箱用の外枠を作成
         const pillarSection = document.createElement("div");
         pillarSection.className = "mb-4 p-3 border rounded bg-light shadow-sm";
-        pillarSection.innerHTML = `<h5 class="fw-bold border-bottom pb-2 text-dark">${name}</h5>`;
+        pillarSection.innerHTML = `<h5 class="fw-bold border-bottom pb-2 text-dark">${rule.name}</h5>`;
 
         // 「元記事」以外のメインアイデアを抽出
-        const mainIdeas = pillarIdeas.filter(item => item.status !== "元記事");
+        const mainIdeas = pillarIdeas.filter(item => {
+            const statusStr = item.status ? String(item.status).trim() : "";
+            return statusStr !== "元記事";
+        });
         
-        if (mainIdeas.length === 0 && pillarIdeas.filter(item => item.status === "元記事").length === 0) {
+        // 該当するデータが1件もない場合の処理
+        const hasOriginals = pillarIdeas.some(item => String(item.status).trim() === "元記事");
+        if (mainIdeas.length === 0 && !hasOriginals) {
             pillarSection.innerHTML += `<p class="text-muted small">投稿されたアイデアはまだありません。</p>`;
         }
 
         mainIdeas.forEach(idea => {
             let badgeColor = "bg-primary";
-            let displayStatus = idea.status;
+            let displayStatus = idea.status ? String(idea.status).trim() : "";
             if (displayStatus === "未統合" || !displayStatus) displayStatus = "単独提案";
 
             if (displayStatus === "新統合") badgeColor = "bg-success";
             if (displayStatus === "単独提案") badgeColor = "bg-info text-dark";
 
-            // 提案箱（タブ3）へのカード追加（item.title, item.summary に対応）
+            // 提案箱（タブ3）へのカード追加
             const card = `
                 <div class="card mb-2 shadow-sm border-0">
                     <div class="card-body p-3">
@@ -244,15 +243,15 @@ function renderStructuredIdeas(ideasDataset) {
             `;
             pillarSection.innerHTML += card;
 
-            // 「新統合」であれば、アイデアの地図（タブ2）にも追加
+            // 「新統合」であれば、アイデア的の地図（タブ2）にも追加
             if (displayStatus === "新統合") {
                 const mapPillar = document.getElementById(`map-pillar-${pillarId}`);
                 if (mapPillar) {
                     mapPillar.innerHTML += `
                         <div class="p-3 mb-2 border-start border-success border-4 bg-light rounded shadow-sm">
                             <span class="badge bg-success mb-2">新統合</span>
-                            <h5 class="fw-bold text-success mb-1">${idea.title}</h5>
-                            <p class="mb-0 text-secondary small">${idea.summary}</p>
+                            <h5 class="fw-bold text-success mb-1">${idea.title || "無題の提案"}</h5>
+                            <p class="mb-0 text-secondary small">${idea.summary || ""}</p>
                         </div>
                     `;
                 }
@@ -260,7 +259,11 @@ function renderStructuredIdeas(ideasDataset) {
         });
 
         // 歴史入りした「元記事」のデータをアコーディオン形式で格納
-        const originalIdeas = pillarIdeas.filter(item => item.status === "元記事");
+        const originalIdeas = pillarIdeas.filter(item => {
+            const statusStr = item.status ? String(item.status).trim() : "";
+            return statusStr === "元記事";
+        });
+
         if (originalIdeas.length > 0) {
             const subAccordionId = `subCollapse-original-${pillarId}`;
             let originalSectionHtml = `
@@ -274,7 +277,6 @@ function renderStructuredIdeas(ideasDataset) {
             `;
 
             originalIdeas.forEach(orig => {
-                // スプレッドシートの「統合・配置理由」の英語名はおそらく「mergedTo」か「reason」になるため、両方に対応させておきます
                 const reasonText = orig.mergedTo || orig.reason || '類似した投稿のため、新統合記事へ集約されました。';
                 
                 originalSectionHtml += `
