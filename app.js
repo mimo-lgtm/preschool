@@ -43,16 +43,18 @@ document.addEventListener("DOMContentLoaded", function () {
         mainHeaderImg.src = "image/header.jpg";
     }
     
+   // 🖼️ タブ切り替え時に最上部画像を大きく変更するロジック
     tabButtons.forEach(button => {
         button.addEventListener('show.bs.tab', function (event) {
             const targetId = event.target.id;
             if (!mainHeaderImg) return;
 
-            if (targetId === "kabechuchi-tab" || targetId === "kabechuchi-tab-btn") {
+            // ボタンのID名に以下の文字が含まれているかで確実に判定します
+            if (targetId.includes("kabechuchi")) {
                 mainHeaderImg.src = "image/header.jpg";
-            } else if (targetId === "map-tab" || targetId === "map-tab-btn") {
+            } else if (targetId.includes("map")) {
                 mainHeaderImg.src = "image/logic.jpg";
-            } else if (targetId === "list-tab" || targetId === "list-tab-btn") {
+            } else if (targetId.includes("list")) {
                 mainHeaderImg.src = "image/teacher.jpg";
             }
         });
