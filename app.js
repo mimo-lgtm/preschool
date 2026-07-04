@@ -325,5 +325,6 @@ function renderStructuredIdeas(ideasDataset) {
         if (mapPillar && mapPillar.innerHTML.trim() === "") {
             mapPillar.innerHTML = `<p class="text-muted small mb-0">現在、この分野の「新統合」アイデアはありません。</p>`;
         }
+        　
     }
 }
