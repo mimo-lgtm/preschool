@@ -34,31 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const aiPerspectivesText = document.getElementById("aiPerspectivesText");
     const aiTitleText = document.getElementById("aiTitleText");
     const aiRefinedText = document.getElementById("aiRefinedText");
-    const mainHeaderImg = document.getElementById("mainHeaderImg");
 
-    // 📸 初期画像は最上部に一貫して header.jpg をセット
-    if (mainHeaderImg) {
-        mainHeaderImg.src = "image/header.jpg";
-    }
-    
-    // 🖼️ 各ページ（タブ）のイメージ画像を、ページ最上部（ヘッダー部分）に切り替えて表示するロジック
-    const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
-    tabButtons.forEach(button => {
-        button.addEventListener('show.bs.tab', function (event) {
-            const targetId = event.target.id;
-            if (!mainHeaderImg) return;
-
-            if (targetId.includes("kabechuchi")) {
-                mainHeaderImg.src = "image/header.jpg";
-            } else if (targetId.includes("map")) {
-                mainHeaderImg.src = "image/logic.jpg";
-            } else if (targetId.includes("list")) {
-                mainHeaderImg.src = "image/teacher.jpg";
-            }
-        });
-    });
-
-    // 初期データの読み込み（GASから既存データを取得）
+    // ✨ 最優先でデータを読み込む（画像エラーの巻き添えを防ぐため一番上に配置）
     fetchOpinions();
 
     // 📄 AI分析（壁打ち）ボタンのイベント
@@ -95,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <div class="mb-3"><strong>a. この意見の核心（本当の願い・課題）</strong><br><span class="text-dark">${currentAiResult["核心"] || "分析中"}</span></div>
 <div class="mb-3"><strong>b. 実現した場合の市民生活への変化</strong><br><span class="text-dark">${currentAiResult["変化"] || "分析中"}</span></div>
 <div class="mb-3"><strong>c. 成功事例（国内外）</strong><br><span class="text-dark">${currentAiResult["成功事例"] || "分析中"}</span></div>
-<div class="mb-3"><strong>d. 懸念点と乗り跨え方</strong><br><span class="text-dark">${currentAiResult["懸念点"] || "分析中"}</span></div>
+<div class="mb-3"><strong>d. 懸念点と乗り越え方</strong><br><span class="text-dark">${currentAiResult["懸念点"] || "分析中"}</span></div>
 <div class="mb-1"><strong>e. さらに発展させるための問い</strong><br><span class="text-dark">${currentAiResult["問い"] || "分析中"}</span></div>
                         `.trim();
                     }
@@ -162,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     // データの再読み込みと画面の再描画
                     await fetchOpinions();
 
-                    // 🏃‍♂️ 新しいID名（list-tab-btn）に対応して自動でタブを切り替え
+                    // 新しいID名（list-tab-btn）に対応して自動でタブを切り替え
                     const listTabBtn = document.getElementById("list-tab-btn");
                     if (listTabBtn) {
                         listTabBtn.click();
@@ -200,7 +177,6 @@ async function fetchOpinions() {
 // 4. アイデアの地図 ＆ 提案箱の描画ロジック
 // ==========================================
 function renderStructuredIdeas(ideasDataset) {
-    // 5つの柱のコンテナを初期化
     for (let i = 1; i <= 5; i++) {
         const mapPillar = document.getElementById(`map-pillar-${i}`);
         if (mapPillar) mapPillar.innerHTML = "";
@@ -208,7 +184,6 @@ function renderStructuredIdeas(ideasDataset) {
     const proposalContainer = document.getElementById("proposal-container");
     if (proposalContainer) proposalContainer.innerHTML = "";
 
-    // GASの大分類と、HTML側の「5つの柱（1〜5）」の正しい紐づけ
     const pillarMapping = {
         "主体的な学び": 1,
         "楽しさと好奇心": 2,
@@ -228,17 +203,14 @@ function renderStructuredIdeas(ideasDataset) {
     pillarNames.forEach((name, index) => {
         const pillarId = index + 1;
         
-        // この大分類（柱）に該当するデータを抽出
         const pillarIdeas = ideasDataset.filter(item => {
             return pillarMapping[item.category] === pillarId;
         });
         
-        // 📦 提案箱用：大分類ごとの枠を生成
         const pillarSection = document.createElement("div");
         pillarSection.className = "mb-4 p-3 border rounded bg-light shadow-sm";
         pillarSection.innerHTML = `<h5 class="fw-bold border-bottom pb-2 text-dark">${name}</h5>`;
 
-        // 「単独提案」と「新統合」を先に並べる
         const mainIdeas = pillarIdeas.filter(item => item.status !== "元記事");
         
         if (mainIdeas.length === 0 && pillarIdeas.filter(item => item.status === "元記事").length === 0) {
@@ -264,7 +236,6 @@ function renderStructuredIdeas(ideasDataset) {
             `;
             pillarSection.innerHTML += card;
 
-            // 🗺️ 【アイデアの地図】側には「新統合」された完成形のみを格納
             if (displayStatus === "新統合") {
                 const mapPillar = document.getElementById(`map-pillar-${pillarId}`);
                 if (mapPillar) {
@@ -279,7 +250,6 @@ function renderStructuredIdeas(ideasDataset) {
             }
         });
 
-        // 📂 元記事を各大分類内の個別アコーディオンに隠して整理
         const originalIdeas = pillarIdeas.filter(item => item.status === "元記事");
         if (originalIdeas.length > 0) {
             const subAccordionId = `subCollapse-original-${pillarId}`;
@@ -308,13 +278,11 @@ function renderStructuredIdeas(ideasDataset) {
             pillarSection.innerHTML += originalSectionHtml;
         }
 
-        // 提案箱コンテナへ流し込み
         if (proposalContainer) {
             proposalContainer.appendChild(pillarSection);
         }
     });
 
-    // アイデアの地図側で空っぽの柱のケア
     for (let i = 1; i <= 5; i++) {
         const mapPillar = document.getElementById(`map-pillar-${i}`);
         if (mapPillar && mapPillar.innerHTML.trim() === "") {
