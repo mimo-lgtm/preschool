@@ -25,26 +25,27 @@
         .border-primary-custom {
             border-left: 4px solid #3b82f6 !important;
         }
-        /* 各ページ個別画像用の共通スタイル */
         .tab-sub-image {
             width: 100%;
             max-height: 250px;
             object-fit: cover;
             object-position: center;
             border-radius: 12px;
+            background-color: #e2e8f0; /* 画像が出ない時の背景色 */
         }
     </style>
 </head>
 <body>
 
-    <!-- 🖼️ ページ最上部：全ページ共通のヘッダー画像（明るさ最大化） -->
-    <div class="w-100 overflow-hidden shadow-sm mb-4" style="max-height: 380px; position: relative;">
+    <!-- 🖼️ ページ最上部：メインヘッダー画像（見つからない場合はグレー背景に文字のみ表示） -->
+    <div class="w-100 overflow-hidden shadow-sm mb-4" style="max-height: 380px; position: relative; background-color: #475569;">
         <img id="mainHeaderImg" src="image/header.jpg" 
              class="img-fluid w-100" 
              style="height: 380px; object-fit: cover; object-position: center;" 
-             alt="メインヘッダー">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(0,0,0,0.15));"></div>
-        <div style="position: absolute; bottom: 30px; left: 5%; color: white; text-shadow: 2px 2px 8px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);">
+             alt="メインヘッダー"
+             onerror="this.style.display='none';"> <!-- 画像がない場合は枠を隠す安全弁 -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));"></div>
+        <div style="position: absolute; bottom: 30px; left: 5%; color: white; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">
             <h1 class="fw-bold display-5">未来の幼児教育 意見ひろば</h1>
             <p class="lead mb-0" style="font-weight: 500;">みんなの想いをAIと紡ぎ、新しい教育のカタチをつくる</p>
         </div>
@@ -69,16 +70,15 @@
         <div class="tab-content" id="myTabContent">
 
             <!-- ========================================== -->
-            <!-- 🧠 タブ1: AIと壁打ちする（個別画像: river.jpg） -->
+            <!-- 🧠 タブ1: AIと壁打ちする                       -->
             <!-- ========================================== -->
             <div class="tab-pane fade show active" id="kabechuchi-tab-pane" role="tabpanel" aria-labelledby="kabechuchi-tab-btn">
-                <!-- ヘッダーの下に配置する個別画像 -->
                 <div class="mb-4">
-                    <img src="image/river.jpg" class="tab-sub-image shadow-sm" alt="壁打ちイメージ">
+                    <!-- 画像読み込みエラー時は自動でダミー画像に切り替えて404を防ぐ処理（altを代用） -->
+                    <img src="image/river.jpg" class="tab-sub-image shadow-sm" alt="壁打ちイメージ" onerror="this.src='https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1200&q=80'">
                 </div>
                 
                 <div class="row g-4">
-                    <!-- 左側：入力フォーム -->
                     <div class="col-lg-5">
                         <div class="card shadow-sm border-0 p-4 h-100" style="border-radius: 12px;">
                             <h5 class="fw-bold text-dark mb-3">🖋️ あなたの想いやアイデア</h5>
@@ -92,7 +92,6 @@
                         </div>
                     </div>
 
-                    <!-- 右側：AI分析結果エリア -->
                     <div class="col-lg-7">
                         <div id="aiPlaceholder" class="card shadow-sm border-0 p-4 h-100 text-center d-flex align-items-center justify-content-center bg-white" style="border-radius: 12px; min-height: 400px;">
                             <div class="text-muted">
@@ -127,12 +126,11 @@
             </div>
 
             <!-- ========================================== -->
-            <!-- 🗺️ タブ2: アイデアの地図（個別画像: ar.jpg）   -->
+            <!-- 🗺️ タブ2: アイデアの地図                        -->
             <!-- ========================================== -->
             <div class="tab-pane fade" id="map-tab-pane" role="tabpanel" aria-labelledby="map-tab-btn">
-                <!-- ヘッダーの下に配置する個別画像 -->
                 <div class="mb-4">
-                    <img src="image/ar.jpg" class="tab-sub-image shadow-sm" alt="地図イメージ">
+                    <img src="image/ar.jpg" class="tab-sub-image shadow-sm" alt="地図イメージ" onerror="this.src='https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80'">
                 </div>
 
                 <div class="row g-4">
@@ -203,12 +201,11 @@
             </div>
 
             <!-- ========================================== -->
-            <!-- 📥 タブ3: 届いた提案箱（個別画像: logic.jpg）  -->
+            <!-- 📥 タブ3: 届いた提案箱                            -->
             <!-- ========================================== -->
             <div class="tab-pane fade" id="list-tab-pane" role="tabpanel" aria-labelledby="list-tab-btn">
-                <!-- ヘッダーの下に配置する個別画像 -->
                 <div class="mb-4">
-                    <img src="image/logic.jpg" class="tab-sub-image shadow-sm" alt="提案箱イメージ">
+                    <img src="image/logic.jpg" class="tab-sub-image shadow-sm" alt="提案箱イメージ" onerror="this.src='https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80'">
                 </div>
 
                 <div class="mb-3">
