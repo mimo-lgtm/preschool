@@ -159,63 +159,36 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================
-// 3. データ取得・バックエンド連携（原因特定デバッグ版）
+// 3. データ取得・バックエンド連携（本番仕様版）
 // ==========================================
 async function fetchOpinions() {
-    // 画面の最下部に強制的にデバッグログを出すエリアを作ります
-    let debugDiv = document.getElementById("debug-log-area");
-    if (!debugDiv) {
-        debugDiv = document.createElement("div");
-        debugDiv.id = "debug-log-area";
-        debugDiv.className = "container my-5 p-4 border border-danger bg-dark text-warning rounded shadow";
-        debugDiv.style.fontFamily = "monospace";
-        debugDiv.style.whiteSpace = "pre-wrap";
-        document.body.appendChild(debugDiv);
-    }
-    debugDiv.innerHTML = "【システム診断ログ】\n⏳ GASへのデータ要求を開始しました...\n";
-
     try {
-        debugDiv.innerHTML += `📡 通信先URL: ${GAS_URL}?action=get\n`;
+        // スプレッドシートからデータを取得
         const res = await fetch(GAS_URL + "?action=get");
-        
-        debugDiv.innerHTML += `🟢 通信ステータス: ${res.status} ${res.statusText}\n`;
         const data = await res.json();
         
-        // 配列か、それともオブジェクトの中にopinionsがあるかチェック
+        // データ形式を配列に整える
         if (Array.isArray(data)) {
-            debugDiv.innerHTML += `📦 データ形式: 配列として取得成功 (件数: ${data.length}件)\n`;
             allOpinions = data;
         } else if (data && data.opinions) {
-            debugDiv.innerHTML += `📦 データ形式: opinionsオブジェクトとして取得成功 (件数: ${data.opinions.length}件)\n`;
             allOpinions = data.opinions;
         } else {
-            debugDiv.innerHTML += `⚠️ 警告: 想定外のデータ構造で届いています。\n${JSON.stringify(data, null, 2)}\n`;
             allOpinions = [];
         }
         
-        if (allOpinions.length > 0) {
-            debugDiv.innerHTML += `👀 先頭データのサンプル:\n${JSON.stringify(allOpinions[0], null, 2)}\n`;
-        }
-        
-        // 取得した全データを地図と提案箱に流し込む
-        debugDiv.innerHTML += `🎨 画面への描画ロジック（renderStructuredIdeas）を実行します...\n`;
+        // 取得したデータを地図と提案箱に流し込む
         renderStructuredIdeas(allOpinions);
-        debugDiv.innerHTML += `✅ 描画ロジックの実行が完了しました。`;
 
     } catch (e) {
-        debugDiv.innerHTML += `❌ エラー発生: ${e.toString()}\n`;
         console.error("データ取得に失敗しました:", e);
     }
 }
 
 // ==========================================
-// 4. アイデアの地図 ＆ 提案箱の描画ロジック（全ステータス表示版）
+// 4. アイデアの地図 ＆ 提案箱の描画ロジック（H列ステータス完全連動版）
 // ==========================================
 function renderStructuredIdeas(ideasDataset) {
-    const debugDiv = document.getElementById("debug-log-area");
-    if (debugDiv) debugDiv.innerHTML += `\n📥 renderStructuredIdeasに渡されたデータ件数: ${ideasDataset.length}件`;
-
-    // 画面の表示エリアを初期化
+    // 画面の各エリアを初期化
     for (let i = 1; i <= 5; i++) {
         const mapPillar = document.getElementById(`map-pillar-${i}`);
         if (mapPillar) mapPillar.innerHTML = "";
@@ -223,7 +196,7 @@ function renderStructuredIdeas(ideasDataset) {
     const proposalContainer = document.getElementById("proposal-container");
     if (proposalContainer) proposalContainer.innerHTML = "";
 
-    // 柱の定義（キーワードを含んでいるかで判定します）
+    // 5つの柱の定義（キーワード部分一致用）
     const pillarRules = [
         { id: 1, name: "🌱 1. 探究心を育む知育環境", keyword: "主体" },
         { id: 2, name: "🎨 2. 感性を磨くアートと表現", keyword: "好奇心" },
@@ -232,47 +205,47 @@ function renderStructuredIdeas(ideasDataset) {
         { id: 5, name: "🌐 5. 地域と言語を繋ぐグローバルコミュニケーション", keyword: "シームレス" }
     ];
 
-    // 5つの柱ごとにループ処理
+    // 5つの柱ごとにデータを仕分けして描画
     pillarRules.forEach(rule => {
         const pillarId = rule.id;
         
-        // スプレッドシートの「category」にキーワードが含まれているか部分一致でチェック
+        // 大分類（category）にキーワードが含まれるデータを抽出
         const pillarIdeas = ideasDataset.filter(item => {
             if (!item.category) return false;
-            const catString = String(item.category).trim();
-            return catString.includes(rule.keyword);
+            return String(item.category).trim().includes(rule.keyword);
         });
         
-        // 提案箱用の外枠を作成
+        // 提案箱（タブ3）用の外枠（セクション）を作成
         const pillarSection = document.createElement("div");
         pillarSection.className = "mb-4 p-3 border rounded bg-light shadow-sm";
         pillarSection.innerHTML = `<h5 class="fw-bold border-bottom pb-2 text-dark">${rule.name}</h5>`;
 
-        // 「元記事」以外のメインアイデアを抽出
+        // 「元記事」以外のメインアイデア（新統合、または単独提案）
         const mainIdeas = pillarIdeas.filter(item => {
             const statusStr = item.status ? String(item.status).trim() : "";
             return statusStr !== "元記事";
         });
         
-        // 該当するデータが1件もない場合の処理
+        // 該当データが一切ない場合の表示
         const hasOriginals = pillarIdeas.some(item => String(item.status).trim() === "元記事");
         if (mainIdeas.length === 0 && !hasOriginals) {
             pillarSection.innerHTML += `<p class="text-muted small">投稿されたアイデアはまだありません。</p>`;
         }
 
+        // メインアイデアの描画処理
         mainIdeas.forEach(idea => {
             let badgeColor = "bg-info text-dark";
             let displayStatus = idea.status ? String(idea.status).trim() : "";
             
-            // 「表示」「未統合」あるいは空文字の場合はすべて「単独提案」として扱う
-            if (displayStatus === "未統合" || displayStatus === "表示" || !displayStatus) {
+            // H列が「新統合」なら緑バッジ、それ以外（表示・未統合・空欄）なら水色の「単独提案」
+            if (displayStatus === "新統合") {
+                badgeColor = "bg-success";
+            } else {
                 displayStatus = "単独提案";
                 badgeColor = "bg-info text-dark";
-            } else if (displayStatus === "新統合") {
-                badgeColor = "bg-success";
             }
 
-            // 提案箱（タブ3）へのカード追加（すべてのステータスを表示）
+            // 【提案箱（タブ3）】へカードを追加
             const card = `
                 <div class="card mb-2 shadow-sm border-0">
                     <div class="card-body p-3">
@@ -284,20 +257,22 @@ function renderStructuredIdeas(ideasDataset) {
             `;
             pillarSection.innerHTML += card;
 
-            // 地図（タブ2）には「新統合」および「単独提案」も合わせてすべて表示する
-            const mapPillar = document.getElementById(`map-pillar-${pillarId}`);
-            if (mapPillar) {
-                mapPillar.innerHTML += `
-                    <div class="p-3 mb-2 border-start ${displayStatus === '新統合' ? 'border-success' : 'border-info'} border-4 bg-light rounded shadow-sm">
-                        <span class="badge ${badgeColor} mb-2">${displayStatus}</span>
-                        <h5 class="fw-bold text-dark mb-1">${idea.title || "無題の提案"}</h5>
-                        <p class="mb-0 text-secondary small">${idea.summary || ""}</p>
-                    </div>
-                `;
+            // 【アイデアの地図（タブ2）】へカードを追加（「新統合」に指定した最初のベース記事がここに載ります）
+            if (displayStatus === "新統合") {
+                const mapPillar = document.getElementById(`map-pillar-${pillarId}`);
+                if (mapPillar) {
+                    mapPillar.innerHTML += `
+                        <div class="p-3 mb-2 border-start border-success border-4 bg-light rounded shadow-sm">
+                            <span class="badge bg-success mb-2">新統合</span>
+                            <h5 class="fw-bold text-success mb-1">${idea.title || "無題の提案"}</h5>
+                            <p class="mb-0 text-secondary small">${idea.summary || ""}</p>
+                        </div>
+                    `;
+                }
             }
         });
 
-        // 「元記事」のデータをアコーディオン形式で格納
+        // 「元記事」に指定されたデータをアコーディオン（折りたたみ）形式で格納
         const originalIdeas = pillarIdeas.filter(item => {
             const statusStr = item.status ? String(item.status).trim() : "";
             return statusStr === "元記事";
@@ -316,7 +291,8 @@ function renderStructuredIdeas(ideasDataset) {
             `;
 
             originalIdeas.forEach(orig => {
-                const reasonText = orig.reason || orig.mergedTo || '類似した投稿のため、新統合記事へ集約されました。';
+                // M列（reason）に書いた文言を統合理由として表示、空ならデフォルト文章
+                const reasonText = orig.reason ? String(orig.reason).trim() : '類似した投稿のため、新統合記事へ集約されました。';
                 originalSectionHtml += `
                     <div class="p-2 mb-2 border-bottom last-border-0 bg-light-subtle rounded">
                         <span class="badge bg-secondary mb-1">元記事</span>
@@ -336,11 +312,11 @@ function renderStructuredIdeas(ideasDataset) {
         }
     });
 
-    // 地図側でデータがまだ無い場合のケア
+    // 地図側で新統合データがまだ無い場合のケア表示
     for (let i = 1; i <= 5; i++) {
         const mapPillar = document.getElementById(`map-pillar-${i}`);
         if (mapPillar && mapPillar.innerHTML.trim() === "") {
-            mapPillar.innerHTML = `<p class="text-muted small mb-0">現在、この分野のアイデアはありません。</p>`;
+            mapPillar.innerHTML = `<p class="text-muted small mb-0">現在、この分野の「新統合」アイデアはありません。</p>`;
         }
     }
 }
