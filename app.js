@@ -159,25 +159,62 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ==========================================
-// 3. データ取得・バックエンド連携
+// 3. データ取得・バックエンド連携（原因特定デバッグ版）
 // ==========================================
 async function fetchOpinions() {
+    // 画面の最下部に強制的にデバッグログを出すエリアを作ります
+    let debugDiv = document.getElementById("debug-log-area");
+    if (!debugDiv) {
+        debugDiv = document.createElement("div");
+        debugDiv.id = "debug-log-area";
+        debugDiv.className = "container my-5 p-4 border border-danger bg-dark text-warning rounded shadow";
+        debugDiv.style.fontFamily = "monospace";
+        debugDiv.style.whiteSpace = "pre-wrap";
+        document.body.appendChild(debugDiv);
+    }
+    debugDiv.innerHTML = "【システム診断ログ】\n⏳ GASへのデータ要求を開始しました...\n";
+
     try {
+        debugDiv.innerHTML += `📡 通信先URL: ${GAS_URL}?action=get\n`;
         const res = await fetch(GAS_URL + "?action=get");
+        
+        debugDiv.innerHTML += `🟢 通信ステータス: ${res.status} ${res.statusText}\n`;
         const data = await res.json();
-        allOpinions = data.opinions || [];
+        
+        // 配列か、それともオブジェクトの中にopinionsがあるかチェック
+        if (Array.isArray(data)) {
+            debugDiv.innerHTML += `📦 データ形式: 配列として取得成功 (件数: ${data.length}件)\n`;
+            allOpinions = data;
+        } else if (data && data.opinions) {
+            debugDiv.innerHTML += `📦 データ形式: opinionsオブジェクトとして取得成功 (件数: ${data.opinions.length}件)\n`;
+            allOpinions = data.opinions;
+        } else {
+            debugDiv.innerHTML += `⚠️ 警告: 想定外のデータ構造で届いています。\n${JSON.stringify(data, null, 2)}\n`;
+            allOpinions = [];
+        }
+        
+        if (allOpinions.length > 0) {
+            debugDiv.innerHTML += `👀 先頭データのサンプル:\n${JSON.stringify(allOpinions[0], null, 2)}\n`;
+        }
         
         // 取得した全データを地図と提案箱に流し込む
+        debugDiv.innerHTML += `🎨 画面への描画ロジック（renderStructuredIdeas）を実行します...\n`;
         renderStructuredIdeas(allOpinions);
+        debugDiv.innerHTML += `✅ 描画ロジックの実行が完了しました。`;
+
     } catch (e) {
+        debugDiv.innerHTML += `❌ エラー発生: ${e.toString()}\n`;
         console.error("データ取得に失敗しました:", e);
     }
 }
 
 // ==========================================
-// 4. アイデアの地図 ＆ 提案箱の描画ロジック（部分一致・自動救済版）
+// 4. アイデアの地図 ＆ 提案箱の描画ロジック（固定列対応版）
 // ==========================================
 function renderStructuredIdeas(ideasDataset) {
+    const debugDiv = document.getElementById("debug-log-area");
+    if (debugDiv) debugDiv.innerHTML += `\n📥 renderStructuredIdeasに渡されたデータ件数: ${ideasDataset.length}件`;
+
     // 画面の表示エリアを初期化
     for (let i = 1; i <= 5; i++) {
         const mapPillar = document.getElementById(`map-pillar-${i}`);
@@ -199,7 +236,7 @@ function renderStructuredIdeas(ideasDataset) {
     pillarRules.forEach(rule => {
         const pillarId = rule.id;
         
-        // スプレッドシートの「category」にキーワードが含まれているか部分一致でチェック（空文字や大文字小文字のズレも救済）
+        // スプレッドシートの「category」にキーワードが含まれているか部分一致でチェック
         const pillarIdeas = ideasDataset.filter(item => {
             if (!item.category) return false;
             const catString = String(item.category).trim();
@@ -226,7 +263,7 @@ function renderStructuredIdeas(ideasDataset) {
         mainIdeas.forEach(idea => {
             let badgeColor = "bg-primary";
             let displayStatus = idea.status ? String(idea.status).trim() : "";
-            if (displayStatus === "未統合" || !displayStatus) displayStatus = "単独提案";
+            if (displayStatus === "未統合" || !displayStatus || displayStatus === "表示") displayStatus = "単独提案";
 
             if (displayStatus === "新統合") badgeColor = "bg-success";
             if (displayStatus === "単独提案") badgeColor = "bg-info text-dark";
@@ -243,7 +280,7 @@ function renderStructuredIdeas(ideasDataset) {
             `;
             pillarSection.innerHTML += card;
 
-            // 「新統合」であれば、アイデア的の地図（タブ2）にも追加
+            // 「新統合」であれば、アイデアの地図（タブ2）にも追加
             if (displayStatus === "新統合") {
                 const mapPillar = document.getElementById(`map-pillar-${pillarId}`);
                 if (mapPillar) {
@@ -258,7 +295,7 @@ function renderStructuredIdeas(ideasDataset) {
             }
         });
 
-        // 歴史入りした「元記事」のデータをアコーディオン形式で格納
+        // 「元記事」のデータをアコーディオン形式で格納
         const originalIdeas = pillarIdeas.filter(item => {
             const statusStr = item.status ? String(item.status).trim() : "";
             return statusStr === "元記事";
@@ -277,8 +314,7 @@ function renderStructuredIdeas(ideasDataset) {
             `;
 
             originalIdeas.forEach(orig => {
-                const reasonText = orig.mergedTo || orig.reason || '類似した投稿のため、新統合記事へ集約されました。';
-                
+                const reasonText = orig.reason || orig.mergedTo || '類似した投稿のため、新統合記事へ集約されました。';
                 originalSectionHtml += `
                     <div class="p-2 mb-2 border-bottom last-border-0 bg-light-subtle rounded">
                         <span class="badge bg-secondary mb-1">元記事</span>
