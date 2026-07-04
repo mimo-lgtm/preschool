@@ -35,21 +35,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const aiTitleText = document.getElementById("aiTitleText");
     const aiRefinedText = document.getElementById("aiRefinedText");
 
-    // 🖼️ タブ切り替え時に最上部画像を大きく変更するロジック（初期画像はheader.jpg）
+    // 🖼️ ヘッダー画像の初期化
     const mainHeaderImg = document.getElementById("mainHeaderImg");
-    const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
-    
     if (mainHeaderImg) {
         mainHeaderImg.src = "image/header.jpg";
     }
     
-   // 🖼️ タブ切り替え時に最上部画像を大きく変更するロジック
+    // 🖼️ タブ切り替え時に最上部画像を大きく変更するロジック（.includesで確実に検知）
+    const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
     tabButtons.forEach(button => {
         button.addEventListener('show.bs.tab', function (event) {
             const targetId = event.target.id;
             if (!mainHeaderImg) return;
 
-            // ボタンのID名に以下の文字が含まれているかで確実に判定します
             if (targetId.includes("kabechuchi")) {
                 mainHeaderImg.src = "image/header.jpg";
             } else if (targetId.includes("map")) {
@@ -154,7 +152,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await res.json();
 
                 if (data.status === "success") {
-                    // 📥 どこに格納されたのかがパッと見えるポップアップ通知
                     alert(`📥 投稿が完了しました！\n\nあなたのアイデアは\n【大分類：${bigCat}】＞【中分類：${midCat}】\nのプロセス提案箱にリアルタイムに格納されました。`);
                     
                     if (txtContent) txtContent.value = "";
@@ -162,10 +159,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (aiPlaceholder) aiPlaceholder.style.removeProperty("display");
                     currentAiResult = null;
 
-                    // データの再読み込みと再描画
                     await fetchOpinions();
 
-                    // 🏃‍♂️ AI壁打ちページから「提案箱（一覧）タブ」へ画面を切り替え
+                    // 「提案箱タブ」へ画面を自動切り替え
                     const listTabBtn = document.getElementById("list-tab-btn") || document.getElementById("list-tab");
                     if (listTabBtn) {
                         listTabBtn.click();
@@ -191,8 +187,6 @@ async function fetchOpinions() {
         const res = await fetch(GAS_URL + "?action=get");
         const data = await res.json();
         allOpinions = data.opinions || [];
-        
-        // 取得したデータを新ルールに基づいて描画
         renderStructuredIdeas(allOpinions);
     } catch (e) {
         console.error("データ取得に失敗しました:", e);
@@ -200,7 +194,7 @@ async function fetchOpinions() {
 }
 
 // ==========================================
-// 4. 【新ルール】アイデアの地図 ＆ 提案箱の描画ロジック
+// 4. 【確定ルール】アイデアの地図 ＆ 提案箱の描画ロジック
 // ==========================================
 function renderStructuredIdeas(ideasDataset) {
     // 5つの柱のコンテナを初期化
@@ -211,13 +205,13 @@ function renderStructuredIdeas(ideasDataset) {
     const proposalContainer = document.getElementById("proposal-container");
     if (proposalContainer) proposalContainer.innerHTML = "";
 
-    // GASの大分類テキストとHTMLの「5つの柱（1〜5）」の紐づけ定義
+    // 💡 GASから届く大分類名と、HTML側の5つの柱（1〜5番）を正確にマッピングします
     const pillarMapping = {
-        "シームレス成長支援": 5,
         "主体的な学び": 1,
         "楽しさと好奇心": 2,
+        "未来を生き抜く力": 3,
         "個性・才能の開花": 4,
-        "未来を生き抜く力": 3
+        "シームレス成長支援": 5
     };
 
     const pillarNames = [
@@ -231,19 +225,18 @@ function renderStructuredIdeas(ideasDataset) {
     pillarNames.forEach((name, index) => {
         const pillarId = index + 1;
         
-        // この大分類（柱）に該当するデータを全抽出
+        // この柱（大分類）に所属するデータを抽出
         const pillarIdeas = ideasDataset.filter(item => {
-            // item.category（大分類名）から対応する柱の番号を取得
             const mappedId = pillarMapping[item.category];
             return mappedId === pillarId;
         });
         
-        // 📦 提案箱用：大分類ごとのボックス枠を生成
+        // 📦 提案箱用：大分類ごとのボックス外枠を生成
         const pillarSection = document.createElement("div");
         pillarSection.className = "mb-4 p-3 border rounded bg-light shadow-sm";
         pillarSection.innerHTML = `<h5 class="fw-bold border-bottom pb-2 text-dark">${name}</h5>`;
 
-        // 「単独提案」と「新統合」を抽出して先に並べる
+        // 「単独提案」と「新統合」を先に並べる
         const mainIdeas = pillarIdeas.filter(item => item.status !== "元記事");
         
         if (mainIdeas.length === 0 && pillarIdeas.filter(item => item.status === "元記事").length === 0) {
@@ -251,9 +244,7 @@ function renderStructuredIdeas(ideasDataset) {
         }
 
         mainIdeas.forEach(idea => {
-            // ステータス（単独提案 / 新統合）に応じたバッジの色分け
             let badgeColor = "bg-primary";
-            // サーバー側が「未統合」と返してきた場合は「単独提案」として扱う
             let displayStatus = idea.status;
             if (displayStatus === "未統合" || !displayStatus) displayStatus = "単独提案";
 
