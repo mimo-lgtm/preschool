@@ -209,7 +209,7 @@ async function fetchOpinions() {
 }
 
 // ==========================================
-// 4. アイデアの地図 ＆ 提案箱の描画ロジック（固定列対応版）
+// 4. アイデアの地図 ＆ 提案箱の描画ロジック（全ステータス表示版）
 // ==========================================
 function renderStructuredIdeas(ideasDataset) {
     const debugDiv = document.getElementById("debug-log-area");
@@ -261,14 +261,18 @@ function renderStructuredIdeas(ideasDataset) {
         }
 
         mainIdeas.forEach(idea => {
-            let badgeColor = "bg-primary";
+            let badgeColor = "bg-info text-dark";
             let displayStatus = idea.status ? String(idea.status).trim() : "";
-            if (displayStatus === "未統合" || !displayStatus || displayStatus === "表示") displayStatus = "単独提案";
+            
+            // 「表示」「未統合」あるいは空文字の場合はすべて「単独提案」として扱う
+            if (displayStatus === "未統合" || displayStatus === "表示" || !displayStatus) {
+                displayStatus = "単独提案";
+                badgeColor = "bg-info text-dark";
+            } else if (displayStatus === "新統合") {
+                badgeColor = "bg-success";
+            }
 
-            if (displayStatus === "新統合") badgeColor = "bg-success";
-            if (displayStatus === "単独提案") badgeColor = "bg-info text-dark";
-
-            // 提案箱（タブ3）へのカード追加
+            // 提案箱（タブ3）へのカード追加（すべてのステータスを表示）
             const card = `
                 <div class="card mb-2 shadow-sm border-0">
                     <div class="card-body p-3">
@@ -280,18 +284,16 @@ function renderStructuredIdeas(ideasDataset) {
             `;
             pillarSection.innerHTML += card;
 
-            // 「新統合」であれば、アイデアの地図（タブ2）にも追加
-            if (displayStatus === "新統合") {
-                const mapPillar = document.getElementById(`map-pillar-${pillarId}`);
-                if (mapPillar) {
-                    mapPillar.innerHTML += `
-                        <div class="p-3 mb-2 border-start border-success border-4 bg-light rounded shadow-sm">
-                            <span class="badge bg-success mb-2">新統合</span>
-                            <h5 class="fw-bold text-success mb-1">${idea.title || "無題の提案"}</h5>
-                            <p class="mb-0 text-secondary small">${idea.summary || ""}</p>
-                        </div>
-                    `;
-                }
+            // 地図（タブ2）には「新統合」および「単独提案」も合わせてすべて表示する
+            const mapPillar = document.getElementById(`map-pillar-${pillarId}`);
+            if (mapPillar) {
+                mapPillar.innerHTML += `
+                    <div class="p-3 mb-2 border-start ${displayStatus === '新統合' ? 'border-success' : 'border-info'} border-4 bg-light rounded shadow-sm">
+                        <span class="badge ${badgeColor} mb-2">${displayStatus}</span>
+                        <h5 class="fw-bold text-dark mb-1">${idea.title || "無題の提案"}</h5>
+                        <p class="mb-0 text-secondary small">${idea.summary || ""}</p>
+                    </div>
+                `;
             }
         });
 
@@ -334,11 +336,11 @@ function renderStructuredIdeas(ideasDataset) {
         }
     });
 
-    // 地図側で新統合データがまだ無い場合のケア
+    // 地図側でデータがまだ無い場合のケア
     for (let i = 1; i <= 5; i++) {
         const mapPillar = document.getElementById(`map-pillar-${i}`);
         if (mapPillar && mapPillar.innerHTML.trim() === "") {
-            mapPillar.innerHTML = `<p class="text-muted small mb-0">現在、この分野の「新統合」アイデアはありません。</p>`;
+            mapPillar.innerHTML = `<p class="text-muted small mb-0">現在、この分野のアイデアはありません。</p>`;
         }
     }
 }
