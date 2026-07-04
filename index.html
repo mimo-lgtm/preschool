@@ -127,61 +127,111 @@
                 </div>
             </div>
 
-            <!-- ==========================================
-                 🗺️ タブ2: アイデアの地図
-                 ========================================== -->
-            <div class="tab-pane fade" id="map" role="tabpanel">
-                <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%); border-radius: 16px; border-left: 8px solid #3b82f6 !important;">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; font-size: 1.3rem;">🤖</div>
-                            <h5 class="card-title fw-bold text-dark m-0">幼児教育の未来を紡ぐ「5つの柱」</h5>
-                        </div>
-                        
-                        <p class="card-text text-secondary mb-3" style="line-height: 1.7; font-size: 10.5pt;">
-                            この広場では、子どもたちの輝く未来の実現と健やかな成長を支えるために、膨大なデータと最新のエビデンスをもとに、未来の幼児教育の在り方をAIが客観的に分析を行いました。<br>
-                            その結果、未来を見据えた建設的で基礎的な視点として、以下の<strong>5つの柱</strong>に整理されました。<br>
-                            <span class="text-muted small">（※これはAIが抽出した案ですので、皆さんのご意見を伺いながら柔軟に変更・調整していきたいと思います）</span>
-                        </p>
-                        
-                        <div class="row g-2">
-                            <div class="col-md-4">
-                                <div class="p-2 bg-white rounded shadow-sm border border-light">
-                                    <span class="badge bg-primary mb-1" style="font-size: 8.5pt;">🌱 1. シームレス成長支援</span>
-                                    <div class="text-muted" style="font-size: 8pt; padding-left: 4px;">出産〜高校まで切れ目なく</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="p-2 bg-white rounded shadow-sm border border-light">
-                                    <span class="badge bg-success mb-1" style="font-size: 8.5pt;">💡 2. 主体的な学び</span>
-                                    <div class="text-muted" style="font-size: 8pt; padding-left: 4px;">子ども中心の学び</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="p-2 bg-white rounded shadow-sm border border-light">
-                                    <span class="badge bg-warning text-dark mb-1" style="font-size: 8.5pt;">🎨 3. 楽しさと好奇心</span>
-                                    <div class="text-muted" style="font-size: 8pt; padding-left: 4px;">探究心を育む</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mt-2">
-                                <div class="p-2 bg-white rounded shadow-sm border border-light">
-                                    <span class="badge bg-info text-dark mb-1" style="font-size: 8.5pt;">✨ 4. 個性・才能の開花</span>
-                                    <div class="text-muted" style="font-size: 8pt; padding-left: 4px;">個別最適化</div>
-                                </div>
-                            </div>
-                            <div class="col-md-8 mt-2">
-                                <div class="p-2 bg-white rounded shadow-sm border border-light">
-                                    <span class="badge bg-danger mb-1" style="font-size: 8.5pt;">🚀 5. 未来を生き抜く力</span>
-                                    <div class="text-muted" style="font-size: 8pt; padding-left: 4px;">非認知能力の育成</div>
-                                </div>
-                            </div>
+           <!-- ==========================================
+     【アイデアの地図】セクション
+========================================== -->
+<div class="tab-pane fade" id="map-tab" role="tabpanel" aria-labelledby="map-tab-btn">
+    <div class="row g-4">
+        <div class="col-12">
+            <h3 class="fw-bold mb-3">🗺️ アイデアの地図（完成形）</h3>
+            <p class="text-muted small mb-4">※ここには「新統合」された完成形のアイデアのみが格納されます。</p>
+
+            <!-- 5つの柱のレイアウトをそのままアコーディオン化 -->
+            <div class="accordion" id="ideaMapAccordion">
+                
+                <!-- 第1の柱 -->
+                <div class="accordion-item border mb-3 rounded shadow-sm overflow-hidden">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed py-4 bg-light fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            🌱 1. 探究心を育む知育環境
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#ideaMapAccordion">
+                        <div class="accordion-body bg-white" id="map-pillar-1">
+                            <!-- JSでここに「新統合」の記事が自動挿入されます -->
+                            <p class="text-muted small">現在、この分野の新統合アイデアはありません。</p>
                         </div>
                     </div>
                 </div>
 
-                <div id="matrixContainer"></div>
-            </div>
+                <!-- 第2の柱 -->
+                <div class="accordion-item border mb-3 rounded shadow-sm overflow-hidden">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed py-4 bg-light fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            🎨 2. 感性を磨くアートと表現
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#ideaMapAccordion">
+                        <div class="accordion-body bg-white" id="map-pillar-2">
+                            <p class="text-muted small">現在、この分野の新統合アイデアはありません。</p>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- 第3の柱 -->
+                <div class="accordion-item border mb-3 rounded shadow-sm overflow-hidden">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed py-4 bg-light fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            🤝 3. 協調性を養うグループワーク
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#ideaMapAccordion">
+                        <div class="accordion-body bg-white" id="map-pillar-3">
+                            <p class="text-muted small">現在、この分野の新統合アイデアはありません。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第4の柱 -->
+                <div class="accordion-item border mb-3 rounded shadow-sm overflow-hidden">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed py-4 bg-light fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            🌳 4. 心身を健やかに育てる自然体験
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#ideaMapAccordion">
+                        <div class="accordion-body bg-white" id="map-pillar-4">
+                            <p class="text-muted small">現在、この分野の新統合アイデアはありません。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第5の柱 -->
+                <div class="accordion-item border mb-3 rounded shadow-sm overflow-hidden">
+                    <h2 class="accordion-header" id="headingFive">
+                        <button class="accordion-button collapsed py-4 bg-light fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                            🌐 5. 地域と言語を繋ぐグローバルコミュニケーション
+                        </button>
+                    </h2>
+                    <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#ideaMapAccordion">
+                        <div class="accordion-body bg-white" id="map-pillar-5">
+                            <p class="text-muted small">現在、この分野の新統合アイデアはありません。</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     【提案箱】セクション（※「元記事」の分類整理に対応）
+========================================== -->
+<div class="tab-pane fade" id="list-tab" role="tabpanel" aria-labelledby="list-tab-btn">
+    <h3 class="fw-bold mb-3">📥 提案箱（プロセスの可視化）</h3>
+    <p class="text-muted small mb-4">投稿されたアイデアの仕分けプロセスが表示されます。「元記事」は各大分類の中に整理されています。</p>
+    
+    <div class="row g-4">
+        <!-- 提案箱の中身も大分類ごとにアコーディオンで整理し、元記事を格納可能にします -->
+        <div class="col-12">
+            <div class="accordion" id="proposalBoxAccordion">
+                <!-- JSで大分類ごとの「単独提案」「新統合」「元記事（アコーディオン）」がここに生成されます -->
+                <div id="proposal-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
             <!-- ==========================================
                  📥 タブ3: 届いた提案箱
                  ========================================== -->
