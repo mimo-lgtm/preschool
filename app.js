@@ -196,13 +196,13 @@ function renderStructuredIdeas(ideasDataset) {
     const proposalContainer = document.getElementById("proposal-container");
     if (proposalContainer) proposalContainer.innerHTML = "";
 
-    // 5つの柱の定義（キーワード「大分類」部分一致用）
+    // あなた本来の意図に修正した5つの柱の定義
     const pillarRules = [
-        { id: 1, name: "🌱 1. 探究心を育む知育環境", keyword: "主体" },
-        { id: 2, name: "🎨 2. 感性を磨くアートと表現", keyword: "好奇心" },
-        { id: 3, name: "🤝 3. 協調性を養うグループワーク", keyword: "未来" },
-        { id: 4, name: "🌳 4. 心身を健やかに育てる自然体験", keyword: "個性" },
-        { id: 5, name: "🌐 5. 地域と言語を繋ぐグローバルコミュニケーション", keyword: "シームレス" }
+        { id: 1, name: "🌱 1. 探究心を育む知育環境（主体的な学び）", keyword: "主体" },
+        { id: 2, name: "🎨 2. 学問の楽しさと感性の融合（楽しさと好奇心）", keyword: "好奇心" },
+        { id: 3, name: "🤝 3. 逆境を跳ね返すサバイバル能力（未来を生き抜く力）", keyword: "未来" },
+        { id: 4, name: "🌳 4. 個性の開花ととことんやり抜く環境（才能の応援）", keyword: "個性" },
+        { id: 5, name: "🌐 5. 学校の枠に縛られない個別最適化教育（自由な学び）", keyword: "シームレス" }
     ];
 
     // 5つの柱ごとにデータを仕分けして描画
