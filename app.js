@@ -185,7 +185,7 @@ async function fetchOpinions() {
 }
 
 // ==========================================
-// 4. アイデアの地図 ＆ 提案箱の描画ロジック（H列ステータス完全連動版）
+// 4. アイデアの地図 ＆ 提案箱の描画ロジック（スプレッドシート完全一致版）
 // ==========================================
 function renderStructuredIdeas(ideasDataset) {
     // 画面の各エリアを初期化
@@ -196,7 +196,7 @@ function renderStructuredIdeas(ideasDataset) {
     const proposalContainer = document.getElementById("proposal-container");
     if (proposalContainer) proposalContainer.innerHTML = "";
 
-    // 5つの柱の定義（キーワード部分一致用）
+    // 5つの柱の定義（キーワード「大分類」部分一致用）
     const pillarRules = [
         { id: 1, name: "🌱 1. 探究心を育む知育環境", keyword: "主体" },
         { id: 2, name: "🎨 2. 感性を磨くアートと表現", keyword: "好奇心" },
@@ -209,7 +209,7 @@ function renderStructuredIdeas(ideasDataset) {
     pillarRules.forEach(rule => {
         const pillarId = rule.id;
         
-        // 大分類（category）にキーワードが含まれるデータを抽出
+        // スプレッドシートの「大分類（category）」にキーワードが含まれるデータを抽出
         const pillarIdeas = ideasDataset.filter(item => {
             if (!item.category) return false;
             return String(item.category).trim().includes(rule.keyword);
@@ -237,7 +237,7 @@ function renderStructuredIdeas(ideasDataset) {
             let badgeColor = "bg-info text-dark";
             let displayStatus = idea.status ? String(idea.status).trim() : "";
             
-            // H列が「新統合」なら緑バッジ、それ以外（表示・未統合・空欄）なら水色の「単独提案」
+            // H列が「新統合」なら緑バッジ、それ以外（表示・空欄など）なら水色の「単独提案」
             if (displayStatus === "新統合") {
                 badgeColor = "bg-success";
             } else {
@@ -257,7 +257,7 @@ function renderStructuredIdeas(ideasDataset) {
             `;
             pillarSection.innerHTML += card;
 
-            // 【アイデアの地図（タブ2）】へカードを追加（「新統合」に指定した最初のベース記事がここに載ります）
+            // 【アイデアの地図（タブ2）】へカードを追加（「新統合」に指定した記事がここに載ります）
             if (displayStatus === "新統合") {
                 const mapPillar = document.getElementById(`map-pillar-${pillarId}`);
                 if (mapPillar) {
@@ -291,8 +291,15 @@ function renderStructuredIdeas(ideasDataset) {
             `;
 
             originalIdeas.forEach(orig => {
-                // M列（reason）に書いた文言を統合理由として表示、空ならデフォルト文章
-                const reasonText = orig.reason ? String(orig.reason).trim() : '類似した投稿のため、新統合記事へ集約されました。';
+                // I列（mergedTo）または L列（aiJson / AI分析深掘り）に入っている統合理由を取得
+                let reasonText = orig.mergedTo ? String(orig.mergedTo).trim() : "";
+                if (!reasonText && orig.aiJson) {
+                    reasonText = String(orig.aiJson).trim();
+                }
+                if (!reasonText) {
+                    reasonText = '類似した投稿のため、新統合記事へ集約されました。';
+                }
+
                 originalSectionHtml += `
                     <div class="p-2 mb-2 border-bottom last-border-0 bg-light-subtle rounded">
                         <span class="badge bg-secondary mb-1">元記事</span>
